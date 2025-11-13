@@ -20,5 +20,21 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
    }
 ![LED LD2 en fonctionnement](./IMG/IMG_5638.JPG)
 
-3. **Testez l’USART2** connecté à la STLink interne.
+3. **Testez l’USART2** connecté à la **ST-Link interne**.
+
+   ```c
+   /* USER CODE BEGIN 0 */
+   int __io_putchar(int ch) {
+       HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+       return ch;
+   }
+   /* USER CODE END 0 */
+
+
+   /* USER CODE BEGIN 2 */
+   printf("Bonjour Antonio y Louis\r\n");
+   /* USER CODE END 2 */
+
+  <img width="544" height="234" alt="image" src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" />
+
 
