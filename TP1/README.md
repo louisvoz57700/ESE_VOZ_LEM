@@ -78,7 +78,9 @@ Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.<br>
 
 <h3>6. Faites fonctionner le shell :</h3>
 <p>
-<img width="494" height="196" alt="image" src="https://github.com/user-attachments/assets/11a05490-4c9f-4896-a64f-eee81310e1c3" />
+<img width="946" height="404" alt="image" src="https://github.com/user-attachments/assets/8c44c48f-9402-4774-bd47-2c54fd7cf134" />
+Le projet est dans Dossier Shell
+
 </p>
 <h2>🔵 2. Le GPIO Expander et le VU-Mètre</h2>
 
