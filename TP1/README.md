@@ -96,7 +96,8 @@ Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossi
 
 
 C'est donc le SPI3 et nous le configurons sur cubeIde:
-<img width="454" height="520" alt="image" src="https://github.com/user-attachments/assets/a627610c-3d2b-4387-8414-3eb473f5d448" />
+<img width="808" height="744" alt="image" src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" />
+
 
 
 
