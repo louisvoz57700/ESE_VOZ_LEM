@@ -92,7 +92,8 @@ Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossi
 
 <p><em>(2. Sur le STM32, quel SPI est utilisé ?)</em><br>
 <img width="1382" height="964" alt="image" src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" />
-<img width="698" height="820" alt="image" src="https://github.com/user-attachments/assets/bd4ac86d-1cfa-422b-88c5-07ef3554d0c7" />
+<img width="638" height="1096" alt="image" src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" />
+
 
 C'est donc le SPI3 et nous le configurons sur cubeIde:
 <img width="454" height="520" alt="image" src="https://github.com/user-attachments/assets/a627610c-3d2b-4387-8414-3eb473f5d448" />
