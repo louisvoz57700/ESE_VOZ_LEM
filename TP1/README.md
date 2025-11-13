@@ -88,6 +88,14 @@ Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.<br>
 Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossier Datasheet.
 </p>
 
+<p><em>(2. Sur le STM32, quel SPI est utilisé ?)</em><br>
+<img width="1382" height="964" alt="image" src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" />
+<img width="698" height="820" alt="image" src="https://github.com/user-attachments/assets/bd4ac86d-1cfa-422b-88c5-07ef3554d0c7" />
+
+
+
+</p>
+
 <hr>
 
 <h2>🧩 Résumé des objectifs</h2>
