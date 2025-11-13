@@ -1,24 +1,3 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>TP1 – AUTO RADIO | Projet ESE_VOZ_LEM</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
-        h1, h2, h3 { color: #333; }
-        h1 { font-size: 2em; }
-        h2 { font-size: 1.6em; margin-top: 1.5em; }
-        h3 { font-size: 1.3em; margin-top: 1em; }
-        p { margin: 0.5em 0; }
-        ul, ol { margin-left: 1.5em; }
-        hr { border: 1px solid #ccc; margin: 2em 0; }
-        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
-        code { font-family: monospace; }
-        img { display: block; margin: 1em 0; max-width: 100%; height: auto; }
-        strong { color: #222; }
-        em { font-style: italic; }
-    </style>
-</head>
 <body>
 
 <h1>📘 TP1 – AUTO RADIO</h1>
