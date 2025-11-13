@@ -100,33 +100,27 @@ C'est donc le SPI3 et nous le configurons sur cubeIde:
 
 <h3>2.2 Tests</h3>
 On peut alors tester le GPIO Extander en allumant quelques LEDS, pour ce faire on crée un driver qui va nous permettre de commander l'extander. Notamment, en SPI, on définit nos pins pour le RESET et le CS. Puis après execution de notre code :
-<div style="display: flex; gap: 20px;">
-
-    <!-- Task LED -->
-    <div style="flex: 1;">
-        <pre><code class="language-c">
+<pre><code class="language-c">
 void Task_LED(void const *argument)
 {
     (void)argument;  // Si tu utilises osThread
 
     for(;;)
     {
-        Select_LED('A', 1,1);
-        Select_LED('A', 0,1);
-        Select_LED('A', 7,1);
-        vTaskDelay(200);
-        Select_LED('A', 1,0);
-        Select_LED('A', 0,1);
-        Select_LED('A', 7,0);
-        vTaskDelay(200);
+    	Select_LED('A', 1,1);
+    	Select_LED('A', 0,1);
+    	Select_LED('A', 7,1);
+    	vTaskDelay(200);
+    	Select_LED('A', 1,0);
+		Select_LED('A', 0,1);
+		Select_LED('A', 7,0);
+    	vTaskDelay(200);
+
+
     }
 }
-        </code></pre>
-    </div>
-
-    <!-- Fonction Select_LED -->
-    <div style="flex: 1;">
-        <pre><code class="language-c">
+</code></pre>
+<pre><code class="language-c">
 // Allume une LED spécifique (0 à 15)
 void Select_LED(char port, uint8_t led,uint8_t state)
 {
@@ -142,16 +136,13 @@ void Select_LED(char port, uint8_t led,uint8_t state)
     }
 
     if (state == 0)
-    {
-        uint8_t pattern = 0xFF;           // 11111111
-        current |= (1 << led);            // Met le bit `led` à 1
-    }
+	{
+		uint8_t pattern = 0xFF;           // 11111111
+		current |= (1 << led);           // Met le bit `led` à 0
+	}
     MCP23S17_WriteRegister(reg, current);
 }
-        </code></pre>
-    </div>
-
-</div>
+</code></pre>
 
 </p>
 
