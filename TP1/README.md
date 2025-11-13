@@ -18,4 +18,4 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
        HAL_Delay(1000); // Délai de 1 seconde
    }
-![LED LD2 en fonctionnement](./TP1/IMG/IMG_5638.JPG)
+![LED LD2 en fonctionnement](./IMG/IMG_5638.JPG)
