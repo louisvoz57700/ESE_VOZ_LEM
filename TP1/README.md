@@ -1,5 +1,3 @@
-<body>
-
 <h1>📘 TP1 – AUTO RADIO</h1>
 <h3>Projet ESE_VOZ_LEM</h3>
 
@@ -22,6 +20,7 @@ le contrôle GPIO, la communication UART, et l’utilisation de FreeRTOS.
 <hr>
 
 <h3>Étape 2 — Test de la LED LD2</h3>
+
 <p>La LED <strong>LD2</strong> est connectée à la broche <strong>PA5</strong>.<br>
 Ajoutez le code suivant dans la boucle principale :</p>
 
@@ -35,11 +34,15 @@ while (1)
 </code></pre>
 
 <p>📸 <strong>LED LD2 en fonctionnement :</strong></p>
-<img src="./IMG/IMG_5638.JPG" alt="LED LD2 en fonctionnement" width="400">
+
+<p>
+  <img src="./IMG/IMG_5638.JPG" alt="LED LD2 en fonctionnement" width="400">
+</p>
 
 <hr>
 
 <h3>Étape 3 & 4 — Test de l’USART2 (ST-Link interne)</h3>
+
 <p>L’<strong>USART2</strong> est utilisé pour communiquer via le port série intégré à la carte.<br>
 Ajoutez le code suivant pour rediriger <code>printf()</code> vers l’UART :</p>
 
@@ -57,39 +60,105 @@ printf("Bonjour Antonio y Louis\r\n");
 </code></pre>
 
 <p><strong>Sortie série visible dans le terminal :</strong></p>
-<img src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" 
-     alt="Sortie série visible" width="544">
+<p>
+  <img src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" 
+       alt="Sortie série visible" width="544" height="234">
+</p>
 
 <hr>
 
 <h3>Étape 5 — Activation de FreeRTOS</h3>
-<p>Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.</p>
-<img src="https://github.com/user-attachments/assets/551afd50-894b-4634-ba9e-a02f31364b89" alt="FreeRTOS" width="624">
+
+<p>
+Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.<br>
+<img width="624" height="206" alt="FreeRtos" src="https://github.com/user-attachments/assets/551afd50-894b-4634-ba9e-a02f31364b89" />
+</p>
 
 <hr>
 
-<h3>Étape 6 — Faites fonctionner le shell</h3>
-<p>Le projet est dans le dossier <strong>Shell</strong> :</p>
-<img src="https://github.com/user-attachments/assets/8c44c48f-9402-4774-bd47-2c54fd7cf134" alt="Shell projet" width="946">
+<h3>6. Faites fonctionner le shell :</h3>
+<p>
+<img width="946" height="404" alt="image" src="https://github.com/user-attachments/assets/8c44c48f-9402-4774-bd47-2c54fd7cf134" />
+Le projet est dans Dossier Shell
 
-<hr>
-
+</p>
 <h2>🔵 2. Le GPIO Expander et le VU-Mètre</h2>
 
 <h3>2.1 Configuration</h3>
-<p><em>(1. Quelle est la référence du GPIO Expander ?)</em><br>
-Le GPIO Expander est le <strong>MCP23S17</strong> et sa datasheet est dans le dossier <strong>Datasheet</strong>.</p>
 
-<p><em>(2. Sur le STM32, quel SPI est utilisé ?)</em></p>
-<img src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" alt="SPI configuration" width="800">
-<img src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" alt="SPI configuration zoom" width="400">
+<p><em>(1. Quelle est la référence du GPIO Expander ? Vous aurez besoin de sa datasheet, téléchargez-la.)</em><br>
+Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossier Datasheet.
+</p>
 
-<p>C'est donc le <strong>SPI3</strong> et nous le configurons sur CubeIDE :</p>
-<img src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" alt="CubeIDE SPI3" width="600">
+<p><em>(2. Sur le STM32, quel SPI est utilisé ?)</em><br>
+<img width="1382" height="964" alt="image" src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" />
+<img width="638" height="1096" alt="image" src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" />
+
+
+C'est donc le SPI3 et nous le configurons sur cubeIde:
+<img width="808" height="744" alt="image" src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" />
+
+<h3>2.2 Tests</h3>
+On peut alors tester le GPIO Extander en allumant quelques LEDS, pour ce faire on crée un driver qui va nous permettre de commander l'extander. Notamment, en SPI, on définit nos pins pour le RESET et le CS. Puis après execution de notre code :
+<div style="display: flex; gap: 20px;">
+
+    <!-- Task LED -->
+    <div style="flex: 1;">
+        <pre><code class="language-c">
+void Task_LED(void const *argument)
+{
+    (void)argument;  // Si tu utilises osThread
+
+    for(;;)
+    {
+        Select_LED('A', 1,1);
+        Select_LED('A', 0,1);
+        Select_LED('A', 7,1);
+        vTaskDelay(200);
+        Select_LED('A', 1,0);
+        Select_LED('A', 0,1);
+        Select_LED('A', 7,0);
+        vTaskDelay(200);
+    }
+}
+        </code></pre>
+    </div>
+
+    <!-- Fonction Select_LED -->
+    <div style="flex: 1;">
+        <pre><code class="language-c">
+// Allume une LED spécifique (0 à 15)
+void Select_LED(char port, uint8_t led,uint8_t state)
+{
+    if (led > 7) return;
+    uint8_t reg = (port == 'A' || port == 'a') ? MCP23S17_GPIOA : MCP23S17_GPIOB;
+    uint8_t current = MCP23S17_ReadRegister(reg);
+    // On part du principe que tout est allumé (0xFF)
+    // On force un seul bit à 0 → éteint la LED
+    if (state == 1)
+    {
+        uint8_t pattern = 0xFF;           // 11111111
+        current &= ~(1 << led);           // Met le bit `led` à 0
+    }
+
+    if (state == 0)
+    {
+        uint8_t pattern = 0xFF;           // 11111111
+        current |= (1 << led);            // Met le bit `led` à 1
+    }
+    MCP23S17_WriteRegister(reg, current);
+}
+        </code></pre>
+    </div>
+
+</div>
+
+</p>
 
 <hr>
 
 <h2>🧩 Résumé des objectifs</h2>
+
 <ul>
   <li>✅ Configuration initiale du projet STM32</li>
   <li>✅ Test du <strong>GPIO (LED LD2)</strong></li>
@@ -101,6 +170,7 @@ Le GPIO Expander est le <strong>MCP23S17</strong> et sa datasheet est dans le do
 <hr>
 
 <h2>👨‍💻 Auteurs</h2>
+
 <ul>
   <li><strong>Antonio</strong></li>
   <li><strong>Louis</strong></li>
@@ -112,6 +182,3 @@ Le GPIO Expander est le <strong>MCP23S17</strong> et sa datasheet est dans le do
 💡 <em>Astuce :</em> N’oubliez pas de vérifier que le port série (<code>COMx</code>) 
 est bien sélectionné dans votre terminal (<strong>115200 bauds, 8N1</strong>).
 </p>
-
-</body>
-</html>
