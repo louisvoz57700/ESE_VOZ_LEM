@@ -35,6 +35,6 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
    printf("Bonjour Antonio y Louis\r\n");
    /* USER CODE END 2 */
 
-<p align="center"> <img src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" width="60%" alt="Sortie USART2 dans le terminal via ST-Link" /> </p>
+![Usart en fonctionnement](./IMG/FreeRtos.png)
 5. Activation de FreeRTOS en mode CMSIS V1
 <p align="center"> <img src="https://github.com/user-attachments/assets/cea024e8-22d5-470e-b895-16a7ddf3a3ab" width="70%" alt="Activation de FreeRTOS CMSIS V1 dans STM32CubeMX" /> </p> 
