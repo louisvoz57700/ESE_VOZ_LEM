@@ -30,14 +30,15 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
    }
    /* USER CODE END 0 */
 
+
    /* USER CODE BEGIN 2 */
    printf("Bonjour Antonio y Louis\r\n");
    /* USER CODE END 2 */
 
+  <img width="544" height="234" alt="image" src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" />
 
-![Usart en fonctionnement](./IMG/Bonjour.png)
+5. **Activez FreeRTOS** en mode CMSIS V1.
 
-5. Activation de FreeRTOS en mode CMSIS V1
-![FreeRTOS](./IMG/FreeRtos.png)
 
-6. Faites fonctionner le shell :
+##2 Le GPIO Expander et le VU-Metre
+###2.1 Configuration
