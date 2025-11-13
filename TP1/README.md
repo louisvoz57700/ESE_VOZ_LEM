@@ -30,7 +30,6 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
    }
    /* USER CODE END 0 */
 
-
    /* USER CODE BEGIN 2 */
    printf("Bonjour Antonio y Louis\r\n");
    /* USER CODE END 2 */
