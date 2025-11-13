@@ -85,8 +85,8 @@ Cela permettra de gérer plusieurs tâches simultanément
 
 <h3>2.1 Configuration</h3>
 
-<p><em>(Section à compléter selon les instructions du TP.)</em><br>
-Dans cette partie, on configure le <strong>GPIO Expander</strong> pour piloter le 
+<p><em>(1. Quelle est la référence du GPIO Expander ? Vous aurez besoin de sa datasheet, téléchargez-la.)</em><br>
+Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossier Datasheet
 <strong>VU-mètre</strong>, en lien avec les entrées/sorties analogiques.
 </p>
 
