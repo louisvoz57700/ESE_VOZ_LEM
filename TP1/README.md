@@ -78,7 +78,9 @@ Cela permettra de gérer plusieurs tâches simultanément
 <hr>
 
 <h3>6. Faites fonctionner le shell :</h3>
-
+<p>
+<img width="494" height="196" alt="image" src="https://github.com/user-attachments/assets/11a05490-4c9f-4896-a64f-eee81310e1c3" />
+</p>
 <h2>🔵 2. Le GPIO Expander et le VU-Mètre</h2>
 
 <h3>2.1 Configuration</h3>
