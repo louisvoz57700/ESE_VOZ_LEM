@@ -71,8 +71,7 @@ printf("Bonjour Antonio y Louis\r\n");
 
 <p>
 Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.<br>
-Cela permettra de gérer plusieurs tâches simultanément 
-(par ex. clignotement LED + communication série).
+<img width="624" height="206" alt="FreeRtos" src="https://github.com/user-attachments/assets/551afd50-894b-4634-ba9e-a02f31364b89" />
 </p>
 
 <hr>
