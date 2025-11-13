@@ -39,4 +39,6 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
 
 5. **Activez FreeRTOS** en mode CMSIS V1.
 
+<img width="598" height="168" alt="image" src="https://github.com/user-attachments/assets/cea024e8-22d5-470e-b895-16a7ddf3a3ab" />
+
 
