@@ -19,3 +19,6 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
        HAL_Delay(1000); // Délai de 1 seconde
    }
 ![LED LD2 en fonctionnement](./IMG/IMG_5638.JPG)
+
+3. **Testez l’USART2** connecté à la STLink interne.
+
