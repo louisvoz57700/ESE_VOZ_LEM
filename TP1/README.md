@@ -34,7 +34,7 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
    /* USER CODE BEGIN 2 */
    printf("Bonjour Antonio y Louis\r\n");
    /* USER CODE END 2 */
-
+![Usart en fonctionnement](./IMG/Bonjour.png)
 
 5. Activation de FreeRTOS en mode CMSIS V1
-![Usart en fonctionnement](./IMG/FreeRtos.png)
+![FreeRTOS](./IMG/FreeRtos.png)
