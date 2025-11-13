@@ -38,3 +38,5 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
 
 5. Activation de FreeRTOS en mode CMSIS V1
 ![FreeRTOS](./IMG/FreeRtos.png)
+
+6. Faites fonctionner le shell :
