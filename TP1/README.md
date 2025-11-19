@@ -104,7 +104,6 @@ On peut alors tester le GPIO Extander en allumant quelques LEDS, pour ce faire o
 void Task_LED(void const *argument)
 {
     (void)argument;  // Si tu utilises osThread
-
     for(;;)
     {
     	Select_LED('A', 1,1);
@@ -112,11 +111,9 @@ void Task_LED(void const *argument)
     	Select_LED('A', 7,1);
     	vTaskDelay(200);
     	Select_LED('A', 1,0);
-		Select_LED('A', 0,1);
-		Select_LED('A', 7,0);
+		  Select_LED('A', 0,1);
+		  Select_LED('A', 7,0);
     	vTaskDelay(200);
-
-
     }
 }
 </code></pre>
@@ -134,7 +131,6 @@ void Select_LED(char port, uint8_t led,uint8_t state)
         uint8_t pattern = 0xFF;           // 11111111
         current &= ~(1 << led);           // Met le bit `led` à 0
     }
-
     if (state == 0)
 	{
 		uint8_t pattern = 0xFF;           // 11111111
