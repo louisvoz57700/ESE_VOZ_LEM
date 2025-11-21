@@ -144,7 +144,10 @@ et on voit que ca marche bien :
 <h2>3 Le CODEC Audio SGTL5000</h3>
 
 </p>
+<h2>2.3 Driver
 
+<h2>3 Le CODEC Audio SGTL5000
+<h2>3.1 Configuration préalables
 <hr>
 
 <h2>🧩 Résumé des objectifs</h2>
