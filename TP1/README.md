@@ -156,6 +156,9 @@ Photo
 
 
 On test l'I2C et on trouve finalement que l'adresse est 0xA0
+<p>
+<img width="2092" height="1028" alt="image" src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" />
+</p>
 
 <h2>🧩 Résumé des objectifs</h2>
 
