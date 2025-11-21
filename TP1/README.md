@@ -148,6 +148,12 @@ et on voit que ca marche bien :
 
 <h2>3 Le CODEC Audio SGTL5000
 <h2>3.1 Configuration préalables
+	 Quelles pins sont utilisées pour l’I2C ? À quel I2C cela correspond dans le
+STM32 ?
+I2C 2, PB10 SCL, PB11, SDA.
+3.2 Configuration du CODEC par l’I2C
+Photo 
+
 <hr>
 
 <h2>🧩 Résumé des objectifs</h2>
