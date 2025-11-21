@@ -141,20 +141,21 @@ void Select_LED(char port, uint8_t led,uint8_t state)
 </code></pre>
 et on voit que ca marche bien :
 
-<h2>3 Le CODEC Audio SGTL5000</h3>
+<h3>3 Le CODEC Audio SGTL5000</h3>
 
 </p>
-<h2>2.3 Driver
+<h2>2.3 Driver</h2>
 
-<h2>3 Le CODEC Audio SGTL5000
-<h2>3.1 Configuration préalables
+<h2>3 Le CODEC Audio SGTL5000</h2>
+<h2>3.1 Configuration préalables</h2>
 	 Quelles pins sont utilisées pour l’I2C ? À quel I2C cela correspond dans le
 STM32 ?
 I2C 2, PB10 SCL, PB11, SDA.
-3.2 Configuration du CODEC par l’I2C
+<h2>3.2 Configuration du CODEC par l’I2C</h2>
 Photo 
-En tesant l'I2C , on trouve que l'adresse est 0xA0
-<hr>
+
+
+On test l'I2C et on trouve finalement que l'adresse est 0xA0
 
 <h2>🧩 Résumé des objectifs</h2>
 
