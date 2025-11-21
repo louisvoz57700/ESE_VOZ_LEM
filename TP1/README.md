@@ -153,7 +153,7 @@ STM32 ?
 I2C 2, PB10 SCL, PB11, SDA.
 3.2 Configuration du CODEC par l’I2C
 Photo 
-
+En tesant l'I2C , on trouve que l'adresse est 0xA0
 <hr>
 
 <h2>🧩 Résumé des objectifs</h2>
