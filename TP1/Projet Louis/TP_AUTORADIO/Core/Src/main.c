@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -27,15 +28,20 @@
 #include <stdio.h>
 #include "shell.h"
 #include "drv_uart1.h"
+#include "GPIO_EXTANDER.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+QueueHandle_t uartQueue;      // Queue pour les caractères UART
+uint8_t rx_byte; // caractère reçu
 
+extern MCP23S17_HandleTypeDef hmcp23s17;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 
 /* USER CODE END PD */
 
@@ -74,6 +80,34 @@ int fonction(h_shell_t * h_shell, int argc, char ** argv)
 	return 0;
 }
 
+
+void Task_shell(void)
+{
+	  shell_init(&h_shell);
+	  shell_add(&h_shell, 'f', fonction, "Une fonction inutile");
+	  shell_run(&h_shell);
+}
+
+void Task_LED(void const *argument)
+{
+    (void)argument;  // Si tu utilises osThread
+
+    for(;;)
+    {
+    	Select_LED('A', 1,1);
+    	Select_LED('A', 0,1);
+    	Select_LED('A', 7,1);
+    	Select_LED('B', 1,1);
+    	vTaskDelay(200);
+    	Select_LED('A', 1,0);
+		Select_LED('A', 0,1);
+		Select_LED('A', 7,0);
+		Select_LED('B', 1,0);
+    	vTaskDelay(200);
+
+
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -106,13 +140,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-  h_shell.drv.receive = drv_uart1_receive;
-  h_shell.drv.transmit = drv_uart1_transmit;
+  //h_shell.drv.receive = drv_uart1_receive;
+  MCP23S17_Init();
+  MCP23S17_SetAllPinsHigh();
 
-  shell_init(&h_shell);
-  shell_add(&h_shell, 'f', fonction, "Une fonction inutile");
-  shell_run(&h_shell);
+
+  h_shell.drv.transmit = drv_uart1_transmit;
+  uartQueue = xQueueCreate(32, sizeof(uint8_t));
+
+  HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+
+  xTaskCreate(Task_shell, "Shell", 256, NULL, 1, NULL);
+  xTaskCreate(Task_LED, "LED", 256, NULL, 1, NULL);
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -130,8 +172,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-	  printf("salut");
+
 
   }
   /* USER CODE END 3 */
@@ -187,7 +228,20 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance == USART2) // Vérifier qu'il s'agit bien de l'UART2
+    {
+    	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xQueueSendFromISR(uartQueue, &rx_byte, &xHigherPriorityTaskWoken);
 
+		// Relancer la réception
+		HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+
+		// Si une tâche a été réveillée par l’ISR, demander un switch
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
 /* USER CODE END 4 */
 
 /**

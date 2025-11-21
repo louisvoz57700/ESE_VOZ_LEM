@@ -5,8 +5,16 @@
  *      Author: Laurent Fiack
  */
 
+#include "main.h"
+#include "cmsis_os.h"
+#include "spi.h"
+#include "usart.h"
+#include "gpio.h"
 #include <stdio.h>
 #include "shell.h"
+#include "drv_uart1.h"
+
+extern QueueHandle_t uartQueue;      // Queue pour les caractères UART
 
 static int sh_help(h_shell_t * h_shell, int argc, char ** argv) {
 	int i;
@@ -83,13 +91,14 @@ int shell_run(h_shell_t * h_shell) {
 	int reading = 0;
 	int pos = 0;
 
+
 	while (1) {
 		h_shell->drv.transmit(prompt, 2);
 		reading = 1;
 
 		while(reading) {
 			char c;
-			h_shell->drv.receive(&c, 1);
+			if (xQueueReceive(uartQueue, &c, portMAX_DELAY)!= pdTRUE){break;}
 			int size;
 
 			switch (c) {

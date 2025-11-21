@@ -1,5 +1,5 @@
-../shell/shell.c:11:12:sh_help	2
-../shell/shell.c:22:6:shell_init	1
-../shell/shell.c:36:5:shell_add	2
-../shell/shell.c:48:12:shell_exec	6
-../shell/shell.c:82:5:shell_run	6
+../shell/shell.c:19:12:sh_help	2
+../shell/shell.c:30:6:shell_init	1
+../shell/shell.c:44:5:shell_add	2
+../shell/shell.c:56:12:shell_exec	6
+../shell/shell.c:90:5:shell_run	7
