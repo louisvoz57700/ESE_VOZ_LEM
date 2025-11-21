@@ -139,6 +139,9 @@ void Select_LED(char port, uint8_t led,uint8_t state)
     MCP23S17_WriteRegister(reg, current);
 }
 </code></pre>
+et on voit que ca marche bien :
+
+<h2>3 Le CODEC Audio SGTL5000</h3>
 
 </p>
 
