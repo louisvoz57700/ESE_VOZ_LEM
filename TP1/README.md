@@ -152,13 +152,16 @@ et on voit que ca marche bien :
 STM32 ?
 I2C 2, PB10 SCL, PB11, SDA.
 <h2>3.2 Configuration du CODEC par l’I2C</h2>
-Photo 
+Photo de la présence d’une horloge sur le signal MCLK.
+
 
 
 On test l'I2C et on trouve finalement que l'adresse est 0xA0
 <p>
 <img width="2092" height="1028" alt="image" src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" />
 </p>
+
+Observez les trames I2C à l’oscilloscope.
 
 <h2>🧩 Résumé des objectifs</h2>
 
