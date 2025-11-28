@@ -163,6 +163,8 @@ On test l'I2C et on trouve finalement que l'adresse est 0xA0
 
 Observez les trames I2C à l’oscilloscope.
 
+
+**3.3 Signaux I2S**
 <h2>🧩 Résumé des objectifs</h2>
 
 <ul>
