@@ -19,6 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "dma.h"
+#include "i2c.h"
+#include "sai.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -29,12 +32,16 @@
 #include "shell.h"
 #include "drv_uart1.h"
 #include "GPIO_EXTANDER.h"
+#include "sgtl5000.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#define AUDIO_BUFFER_SIZE 256
 QueueHandle_t uartQueue;      // Queue pour les caractères UART
 uint8_t rx_byte; // caractère reçu
+int16_t txBuffer[AUDIO_BUFFER_SIZE];
+int16_t rxBuffer[AUDIO_BUFFER_SIZE];
 
 extern MCP23S17_HandleTypeDef hmcp23s17;
 /* USER CODE END PTD */
@@ -58,6 +65,7 @@ h_shell_t h_shell;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -80,11 +88,45 @@ int fonction(h_shell_t * h_shell, int argc, char ** argv)
 	return 0;
 }
 
+int LED(h_shell_t * h_shell, int argc, char ** argv)
+{
+	int numero;
+	int size;
+	Select_LED('B', 1,1);
+	if (argv[1]=="\r")
+	{
+		numero = atoi(argv[0]);
+		if (numero > 8)
+		{
+			Select_LED('B', 16-numero,1);
+		}
+		else
+		{
+			Select_LED('A', numero,1);
+		}
+		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"c'est fait chef");
+	}
+	else if (argv[1]=="1")
+	{
+		numero = atoi(argv[0]) * 10 + atoi(argv[1]);
+		Select_LED('B', 16-numero,1);
+		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"c'est fait chef");
+	}
+	else
+	{
+		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"Il y a pas assez de led");
+	}
+	drv_uart1_transmit(h_shell->print_buffer,size);
+	return 0;
+
+}
+
 
 void Task_shell(void)
 {
 	  shell_init(&h_shell);
-	  shell_add(&h_shell, 'f', fonction, "Une fonction inutile");
+	  shell_add(&h_shell,'f', fonction, "Une fonction inutile");
+	  shell_add(&h_shell,'L',LED,"Une fonction pour allumer les LEDs");
 	  shell_run(&h_shell);
 }
 
@@ -94,6 +136,7 @@ void Task_LED(void const *argument)
 
     for(;;)
     {
+    	//generateTriangle(txBuffer, AUDIO_BUFFER_SIZE, 10000);  // amplitude ≈ 10k / 32767
     	Select_LED('A', 1,1);
     	Select_LED('A', 0,1);
     	Select_LED('A', 7,1);
@@ -133,24 +176,58 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  /* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_SPI3_Init();
+  MX_I2C2_Init();
+  MX_SAI2_Init();
   /* USER CODE BEGIN 2 */
   //h_shell.drv.receive = drv_uart1_receive;
   MCP23S17_Init();
   MCP23S17_SetAllPinsHigh();
+  __HAL_SAI_ENABLE(&hsai_BlockA2);
 
+  uint8_t chip_id = 0;
+  HAL_StatusTypeDef status;
+
+  status = HAL_I2C_Mem_Read(
+      &hi2c2,              // Handle I2C2
+      0x14,           // Adresse I2C du CODEC (décalée)
+      0x0000,              // Adresse du registre CHIP_ID
+      I2C_MEMADD_SIZE_16BIT,
+      &chip_id,            // Buffer où stocker la donnée
+      1,                   // Lire 1 octet
+      100                  // Timeout
+  );
 
   h_shell.drv.transmit = drv_uart1_transmit;
   uartQueue = xQueueCreate(32, sizeof(uint8_t));
-
   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+
+  uint16_t sgtl_address = 0x14;
+  uint16_t data;
+
+  h_sgtl5000_t h_sgtl5000;
+  h_sgtl5000.hi2c = &hi2c2;
+  h_sgtl5000.dev_address = sgtl_address;
+
+  sgtl5000_init(&h_sgtl5000);
+
+  generateTriangle(txBuffer, AUDIO_BUFFER_SIZE, 10000);
+  //generateSquare(txBuffer, AUDIO_BUFFER_SIZE, 30000);
+  HAL_SAI_Transmit_DMA(&hsai_BlockA2, (int16_t*)txBuffer, AUDIO_BUFFER_SIZE);
+  HAL_SAI_Receive_DMA(&hsai_BlockB2, (int16_t*)rxBuffer, AUDIO_BUFFER_SIZE);
+
+
 
   xTaskCreate(Task_shell, "Shell", 256, NULL, 1, NULL);
   xTaskCreate(Task_LED, "LED", 256, NULL, 1, NULL);
@@ -227,6 +304,31 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_SAI2;
+  PeriphClkInit.Sai2ClockSelection = RCC_SAI2CLKSOURCE_PLLSAI1;
+  PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_HSI;
+  PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
+  PeriphClkInit.PLLSAI1.PLLSAI1N = 13;
+  PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV17;
+  PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_SAI1CLK;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -242,6 +344,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
+
+void generateTriangle(int16_t *buffer, uint32_t bufferSize, int16_t amplitude)
+{
+    uint32_t i;
+
+    // On travaille en fixed-point pour éviter les arrondis foireux
+    for (i = 0; i < bufferSize; i++) {
+        // Position dans le cycle : 0 → bufferSize-1
+        // On utilise 4 * i pour avoir une résolution plus fine (évite les trous d'arrondi)
+        int32_t phase = (int32_t)(4ULL * i * amplitude / bufferSize);
+
+        if (i < bufferSize / 2) {
+            // Montée : -amplitude → +amplitude
+            buffer[i] = (int16_t)(phase - amplitude);
+        } else {
+            // Descente : +amplitude → -amplitude
+            buffer[i] = (int16_t)(3 * amplitude - phase);
+        }
+    }
+}
+
+void generateSquare(int16_t *buf, uint32_t len, int16_t amp)
+{
+    uint32_t half = len / 2;
+    for (uint32_t i = 0; i < len; i++) {
+        buf[i] = (i < half) ? amp : -amp;
+    }
+}
+
+void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
+{
+    //generateTriangle(&txBuffer[0], AUDIO_BUFFER_SIZE/2, 12000);
+}
+
+void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
+{
+    //generateTriangle(&txBuffer[AUDIO_BUFFER_SIZE/2], AUDIO_BUFFER_SIZE/2, 12000);
+}
+
 /* USER CODE END 4 */
 
 /**
