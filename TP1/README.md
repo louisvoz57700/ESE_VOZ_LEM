@@ -85,21 +85,20 @@ Le projet est dans Dossier Shell
 <h2>🔵 2. Le GPIO Expander et le VU-Mètre</h2>
 
 <h3>2.1 Configuration</h3>
-
-<p><em>(1. Quelle est la référence du GPIO Expander ? Vous aurez besoin de sa datasheet, téléchargez-la.)</em><br>
 Le GPIO Expander est le MCP23S17 et sa datasheet est téléchargé dans le dossier Datasheet.
+En regardant le schématic du shield et en comparant le .ioc, on en déduit que le SPI utilisé est le 3ème (SPI3)
 </p>
 
-<p><em>(2. Sur le STM32, quel SPI est utilisé ?)</em><br>
-<img width="1382" height="964" alt="image" src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" />
-<img width="638" height="1096" alt="image" src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" />
-
-
-C'est donc le SPI3 et nous le configurons sur cubeIde:
-<img width="808" height="744" alt="image" src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" width="30%">
+  <img src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" width="30%">
+  <img src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" width="30%">
+</p>
 
 <h3>2.2 Tests</h3>
-On peut alors tester le GPIO Extander en allumant quelques LEDS, pour ce faire on crée un driver qui va nous permettre de commander l'extander. Notamment, en SPI, on définit nos pins pour le RESET et le CS. Puis après execution de notre code :
+On peut alors tester le GPIO Extander en allumant quelques LEDS, pour ce faire on crée un driver qui va nous permettre de commander l'extander. On comprend que pour communiquer avec le GPIO Extander, il faut le sélectionner grâce au pin CS (ChipSelect) et qu'il faut aussi utiliser le pin RST (Reset).
+
+On crée alors un driver qui va nous permettre d'initialiser le GPIO Extander mais aussi de sélectionner l'état de chaque pin :
 <pre><code class="language-c">
 void Task_LED(void const *argument)
 {
@@ -139,23 +138,32 @@ void Select_LED(char port, uint8_t led,uint8_t state)
     MCP23S17_WriteRegister(reg, current);
 }
 </code></pre>
-et on voit que ca marche bien :
-
-<h3>3 Le CODEC Audio SGTL5000</h3>
-
+En testant, on se rend compte pour que pour avoir une sortie à l'état haut, il faut mettre 0 dans le registre concerné.
+On voit que ca marche bien :
+<p align="center">
+  <img src="IMG/GIF_LED.gif" alt="demo" width="300">
 </p>
+
 <h2>2.3 Driver</h2>
+On crée alors une nouvelle fonction LED qui va être inclu dans le shell et qui va nous permettre d'allumer n'importe quelle LED grâce à une commande :
+
+</code></pre>
+<pre><code class="language-c">
+>L 15 1
+</code></pre>
+Le L fait appel à la fonction LED, le 15 signifie la 15ème LED et le 1 est l'état de la LED (allumer ou éteint)
 
 <h2>3 Le CODEC Audio SGTL5000</h2>
 <h2>3.1 Configuration préalables</h2>
-	 Quelles pins sont utilisées pour l’I2C ? À quel I2C cela correspond dans le
-STM32 ?
-I2C 2, PB10 SCL, PB11, SDA.
+En regardant le schematic, on voit bien que l'on va devoir travailler avec l'I2C2 (PB10 - SCL et PB11 - SDA) 
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/I2C+SAI.png" />
+</p>
 <h2>3.2 Configuration du CODEC par l’I2C</h2>
-Photo de la présence d’une horloge sur le signal MCLK.
-
-
-
+On regarde l'horloge MCLK :
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/MCLK.png" />
+</p>
 On test l'I2C et on trouve finalement que l'adresse est 0xA0
 <p>
 <img width="2092" height="1028" alt="image" src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" />
