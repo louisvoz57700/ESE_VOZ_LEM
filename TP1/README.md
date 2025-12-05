@@ -173,6 +173,10 @@ Observez les trames I2C à l’oscilloscope.
 
 
 **3.3 Signaux I2S**
+
+**3.4 Génération de signal audio**
+**1. Générez un signal triangulaire.**
+Photo 
 <h2>🧩 Résumé des objectifs</h2>
 
 <ul>
@@ -185,8 +189,6 @@ Observez les trames I2C à l’oscilloscope.
 
 <hr>
 
-**3.4 Génération de signal audio**
-**1. Générez un signal triangulaire.**
 
 <h2>👨‍💻 Auteurs</h2>
 
