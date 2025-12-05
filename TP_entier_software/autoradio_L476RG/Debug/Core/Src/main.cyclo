@@ -1,0 +1,15 @@
+../Core/Src/main.c:84:5:__io_putchar	1
+../Core/Src/main.c:90:12:fonction	2
+../Core/Src/main.c:105:12:addition	2
+../Core/Src/main.c:117:12:filtre_RC	2
+../Core/Src/main.c:132:6:task_shell	1
+../Core/Src/main.c:149:6:HAL_UART_RxCpltCallback	2
+../Core/Src/main.c:157:12:led_control	4
+../Core/Src/main.c:189:6:Generate_Triangle_Wave	3
+../Core/Src/main.c:231:5:main	5
+../Core/Src/main.c:331:6:SystemClock_Config	4
+../Core/Src/main.c:380:6:PeriphCommonClock_Config	2
+../Core/Src/main.c:402:6:Process_Audio_Buffer	2
+../Core/Src/main.c:415:6:HAL_SAI_RxHalfCpltCallback	2
+../Core/Src/main.c:423:6:HAL_SAI_RxCpltCallback	2
+../Core/Src/main.c:438:6:Error_Handler	1
