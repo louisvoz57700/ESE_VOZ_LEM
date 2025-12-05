@@ -164,31 +164,101 @@ On regarde l'horloge MCLK :
 <p>
 <img width="2092" height="1028" alt="image" src="IMG/MCLK.png" />
 </p>
-On test l'I2C et on trouve finalement que l'adresse est 0xA0
+L'horloge MCLK sert une horloge précise au codec (pour les PLL, échantillonage,...). Elle est par conséquent rapide et multiple de la fréquence d'échantillonage choisi : 12.26MHz = 48kHz * 256 
+
+
+On essaye l'I2C et on trouve finalement que l'adresse est bien 0xA0
 <p>
 <img width="2092" height="1028" alt="image" src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" />
 </p>
+On peut alors identifier les trames I2C, seulement lors de l'initialisation:
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/I2C_TRAME.JPG" />
+</p>
 
-Observez les trames I2C à l’oscilloscope.
+<h2>3.3 Signaux I2S</h2>
+
+Après avoir fait l'initialisation du SAI, on peut démarrer la lecture en DMA sur la réception et l'envoi grâce au commande :
+
+<pre><code class="language-c">
+#define AUDIO_BUFFER_SIZE_RX 256
+#define AUDIO_BUFFER_SIZE_TX 256
+
+int16_t txBuffer[AUDIO_BUFFER_SIZE_TX];
+int16_t rxBuffer[AUDIO_BUFFER_SIZE_RX];
+
+HAL_SAI_Transmit_DMA(&hsai_BlockA2, (int16_t*)txBuffer, AUDIO_BUFFER_SIZE_TX);
+HAL_SAI_Receive_DMA(&hsai_BlockB2, (int16_t*)rxBuffer, AUDIO_BUFFER_SIZE_RX);
+</code></pre>
+
+On peut alors observer dans un premier temps SCLK :
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/SCLK.png" />
+</p>
+
+Le but de cette horloge est de cadencé les bits transmis via I2S. Donc à chaque front montant, le codec va lire un bit. On peut calculer sa fréquence :
+
+$f_{SCLK}=f_s \times NbBitsParCanal\times NbCanaux = 48kHz \times 32\,(2 \times 16 bits)  \times 2 = 1.536 MHz $
+
+Et la dernière clock est la LRCLK :
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/LRCLK.png " />
+</p>
+
+LRCLK indique quel canal est envoyé donc :
+
+$LOW$ -> canal gauche
+
+$HIGH$ -> canal droit
+
+<h2>3.4 Génération de signal audio</h2>
+
+On crée une fonction *generateTriangle()* qui remplit un buffer avec un triangle. De plus on oublie pas de mettre le DMA_Transmit en circulaire. 
+En remplissant le buffer à l'initialisation, on aura bien une sortie triangulaire :
+<p>
+<img width="2092" height="1028" alt="image" src="IMG/triangle.jpeg " />
+</p>
+
+> ⚠️ **Remarque importante :** Nous avons eu beaucoup de mal à générer ce signal car l'initialisation de notre n'était pas bonne
 
 
-**3.3 Signaux I2S**
+<h2>3.5-4 Visualisation</h2>
+Pour la création du Vumètre, on reprend tout ce qui a était réalisé avant. On va dans un premier temps faire la moyenne de notre buffer reçu.
 
-**3.4 Génération de signal audio**
-**1. Générez un signal triangulaire.**
-Photo 
+Puis lorsque l'on a la moyenne, on peut allumer le nombre de LED correspondant. On divise le MAX_RANGE par 8 ( car on a 8 lignes de LEDs)
+
+On peut alors appeler cette fonction dans une task :
+<pre><code class="language-c">
+void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
+{
+    int32_t sum = 0;
+    for(int i = 0; i < AUDIO_BUFFER_SIZE_RX; i++) {
+        sum += abs(rxBuffer[i]);
+    }
+    // amplitude moyenne
+    float amplitude = (float)sum / (float)AUDIO_BUFFER_SIZE_RX;
+    updateVUMeter(amplitude);
+}
+</code></pre>
+
+On obtient alors :
+<p align="center">
+  <img src="IMG/MIC.gif" alt="demo" width="300">
+</p>
+
+<h2>5 - Filtres RC</h2>
+
 <h2>🧩 Résumé des objectifs</h2>
 
 <ul>
-  <li>✅ Configuration initiale du projet STM32</li>
-  <li>✅ Test du <strong>GPIO (LED LD2)</strong></li>
-  <li>✅ Test de la <strong>liaison série (USART2)</strong></li>
-  <li>✅ Mise en place de <strong>FreeRTOS</strong></li>
-  <li>⏳ Configuration du <strong>GPIO Expander / VU-Mètre</strong></li>
+  <li>✅ Avoir un shell fonctionnel
+  <li>✅ Faire fonctionner le GPIO extander
+  <li>✅ Faire fonctionner le codec
+  <li>✅ Réaliser le Vumeter
+  <li>⏳ Faire la modification de voix
 </ul>
 
 <hr>
-
 
 <h2>👨‍💻 Auteurs</h2>
 
