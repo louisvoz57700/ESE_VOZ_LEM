@@ -282,7 +282,7 @@ uint16_t RC_filter_update(h_RC_filter_t * h_RC_filter, uint16_t input)
 
 On rajoute : shell_add(&shell_instance, 'c', filtre_RC, "filtre_RC"); pour pouvoir modifier la fréquence de coupure dans le shell.
 
-6 - Reverb
+**6 - Reverb**
 Voici les étapes logiques effectuées pour chaque échantillon audio (16 bits) :
 
 Conversion de format : Les données brutes (octets) transmises par le DMA sont réinterprétées en échantillons audio signés sur 16 bits.
