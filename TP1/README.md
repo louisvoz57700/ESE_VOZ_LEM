@@ -248,6 +248,8 @@ On obtient alors :
 
 <h2>5 - Filtres RC</h2>
 
+<h2>6 - Reverb
+
 <h2>🧩 Résumé des objectifs</h2>
 
 <ul>
