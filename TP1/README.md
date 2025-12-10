@@ -246,9 +246,11 @@ On obtient alors :
   <img src="IMG/MIC.gif" alt="demo" width="300">
 </p>
 
-<h2>5 - Filtres RC</h2>
+## 5 - Filtres RC
+
 ![WhatsApp Image 2025-12-10 à 11 52 04_48442d18](https://github.com/user-attachments/assets/074ad9aa-ca63-4d86-9afe-361f6f40562f)
 
+```c
 void RC_filter_init(h_RC_filter_t * h_RC_filter, uint16_t cutoff_frequency, uint16_t sampling_frequency)
 {
     uint32_t b_value = 0;
@@ -266,7 +268,6 @@ void RC_filter_init(h_RC_filter_t * h_RC_filter, uint16_t cutoff_frequency, uint
 
 uint16_t RC_filter_update(h_RC_filter_t * h_RC_filter, uint16_t input)
 {
-
     uint32_t acc = 0;
 
     acc = (h_RC_filter->coeff_A * input) + (h_RC_filter->coeff_B * h_RC_filter->out_prev);
@@ -278,19 +279,23 @@ uint16_t RC_filter_update(h_RC_filter_t * h_RC_filter, uint16_t input)
     return output;
 }
 
-On rajoute : shell_add(&shell_instance, 'c', filtre_RC, "filtre_RC"); pour pouvoir  modifier la fréquence de coupure dans le shell.
+On rajoute : shell_add(&shell_instance, 'c', filtre_RC, "filtre_RC"); pour pouvoir modifier la fréquence de coupure dans le shell.
 
-<h2>6 - Reverb
-
+6 - Reverb
 Voici les étapes logiques effectuées pour chaque échantillon audio (16 bits) :
 
 Conversion de format : Les données brutes (octets) transmises par le DMA sont réinterprétées en échantillons audio signés sur 16 bits.
 
 Récupération du passé (L'écho) : L'algorithme lit une valeur stockée dans un tableau mémoire dédié (delay buffer) à l'index actuel. Cette valeur représente un son enregistré "il y a X millisecondes".
 
+Mixage :
+
 On prend le son actuel (venant du microphone).
+
 On y ajoute le son "passé" récupéré précédemment.
+
 Atténuation : Le son passé est divisé par 2 avant l'addition pour simuler une décroissance naturelle du volume.
+
 Sauvegarde pour le futur : L'échantillon actuel (brut) est enregistré dans ce même tableau mémoire à l'index courant. Il deviendra ainsi l'écho lorsqu'on repassera sur cet index plus tard.
 
 Gestion du Buffer Circulaire : L'index de lecture/écriture avance d'un pas. S'il atteint la fin du tableau de délai, il retourne instantanément au début (index 0). C'est la taille de ce tableau qui détermine la durée du retard (en ms).
