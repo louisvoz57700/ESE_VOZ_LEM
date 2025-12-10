@@ -1,0 +1,2 @@
+../shell/drv_uart1.c:14:9:drv_uart1_receive	1
+../shell/drv_uart1.c:21:9:drv_uart1_transmit	1
