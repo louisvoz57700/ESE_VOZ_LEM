@@ -278,6 +278,7 @@ uint16_t RC_filter_update(h_RC_filter_t * h_RC_filter, uint16_t input)
 
     return output;
 }
+```
 
 On rajoute : shell_add(&shell_instance, 'c', filtre_RC, "filtre_RC"); pour pouvoir modifier la fréquence de coupure dans le shell.
 
