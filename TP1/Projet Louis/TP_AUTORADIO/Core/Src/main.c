@@ -92,7 +92,6 @@ int LED(h_shell_t * h_shell, int argc, char ** argv)
 {
 	int numero;
 	int size;
-	Select_LED('B', 1,1);
 	if (argv[1]=="\r")
 	{
 		numero = atoi(argv[0]);
