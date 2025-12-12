@@ -17,6 +17,7 @@ L’objectif principal est d’apprendre à concevoir un circuit numérique, le 
 
 ### 1. Premier Test
 On suit toute la démarche est on arrive bien éteindre la LED quand on appuie sur le bouton :
+<img width="480" height="848" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
 
 
 On change alors notre en code en mettant not pushl :
