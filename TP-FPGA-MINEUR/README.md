@@ -26,10 +26,14 @@ On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on
 
 
 ### 2. Faire clignoter une LED
+![WhatsApp Image 2025-12-12 à 10 37 48_b3b67c9f](https://github.com/user-attachments/assets/885d98dc-a522-4058-8c69-d7e5c6610f5b)
+
 La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 ![alt text](/TP-FPGA-MINEUR/IMG/image.png)
 
 ![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
+![WhatsApp Image 2025-12-12 à 10 37 48_571fd5b2](https://github.com/user-attachments/assets/ff54ca97-e1a9-49d1-bf60-13e0ae75aa39)
+
 
 6. On peut réaliser 
 
