@@ -10,6 +10,6 @@ Chaque dossier correspond à un TP individuel avec son propre fichier `README.md
 
 | TP | Titre | Lien vers le README |
 |----|--------|---------------------|
-| 🚗 TP | Création d'un auto-radio | [TP1/README.md](./TP1/README.md) |
-| 🚗 TP | FPGA mineur | [TP1/README.md](./TP-FPGA-MINEUR//README.md) |
+| 🚗 TP | Création d'un auto-radio | [LIEN](./TP1/README.md) |
+| 🚗 TP | FPGA mineur | [LIEN](./TP-FPGA-MINEUR/README.md) |
 ---
