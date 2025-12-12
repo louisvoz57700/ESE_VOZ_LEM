@@ -82,6 +82,7 @@ begin
 
 end architecture rtl;
 ```
+Sur Modelsim :
 <img width="2338" height="194" alt="image" src="https://github.com/user-attachments/assets/3843c69e-5392-47f0-a00e-400f1df53125" />
 
 - Vérification fonctionnelle.
