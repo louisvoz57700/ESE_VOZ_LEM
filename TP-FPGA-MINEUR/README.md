@@ -20,7 +20,7 @@ On suit toute la démarche est on arrive bien éteindre la LED quand on appuie s
 <img width="480" height="848" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
 
 
-On change alors notre en code en mettant not pushl :
+On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on appuie sur le bouton.
 
 
 
