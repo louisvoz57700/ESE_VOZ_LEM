@@ -24,10 +24,11 @@ On change alors notre en code en mettant not pushl :
 
 
 
-### 2. Conception en HDL
-- Écriture du code VHDL/Verilog.
-- Architecture modulaire.
-- Gestion horloge / reset / synchronicité.
+### 2. Faire clignoter une LED
+La clock FPGA_CLK1_50 est une 50MHz
+![alt text](/TP-FPGA-MINEUR/IMG/image.png)
+
+![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
 
 ### 3. Simulation
 - Création de testbenches.
