@@ -26,10 +26,22 @@ On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on
 
 
 ### 2. Faire clignoter une LED
-La clock FPGA_CLK1_50 est une 50MHz
+La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 ![alt text](/TP-FPGA-MINEUR/IMG/image.png)
 
 ![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
+
+6. On peut réaliser 
+
+7. On peut réaliser une première ébauche du compteur :
+
+
+8. 
+![alt text](image.png)
+
+
+11. Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
+
 
 ### 3. Simulation
 - Création de testbenches.
