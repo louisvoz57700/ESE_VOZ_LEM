@@ -1,5 +1,5 @@
 # 📝 README — TP FPGA  
-**Auteurs :** Antoine Le Marignier, Louis Vozzzola
+**Auteurs :** Antoine Lemarignier, Louis Vozzzola
 
 ## 📌 Présentation du projet
 Ce TP a pour objectif de se familiariser avec le développement sur **FPGA**, depuis la description matérielle jusqu’à la synthèse et la mise en œuvre sur carte.
@@ -46,9 +46,43 @@ La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 
 11. Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
 
+Gestion des encodeurs
 
 ### 3. Simulation
 - Création de testbenches.
+- ![WhatsApp Image 2025-12-12 à 11 29 12_fdd79241](https://github.com/user-attachments/assets/3e0310cd-c0f9-460c-9311-552607601bd9)
+
+- <img width="2212" height="864" alt="image" src="https://github.com/user-attachments/assets/03ddea3f-9e36-49ce-a7e2-ec6fecb05e71" />
+'''VHDL
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity edge_detector is
+    port (
+        i_clk : in  std_logic;
+        i_a   : in  std_logic;  --  A
+        o_e   : out std_logic   --  E
+    );
+end entity edge_detector;
+
+architecture rtl of edge_detector is
+    signal r1_curr : std_logic := '0'; 
+    signal r2_prev : std_logic := '0'; --  'b' 
+
+begin
+    process(i_clk)
+    begin
+        if rising_edge(i_clk) then
+            r1_curr <= i_a;      
+            r2_prev <= r1_curr;  
+        end if;
+    end process;
+	 
+    o_e <= r1_curr xor r2_prev;
+
+end architecture rtl;
+'''
+
 - Vérification fonctionnelle.
 
 ### 4. Synthèse & Implémentation
