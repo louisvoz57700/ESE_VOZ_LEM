@@ -27,6 +27,7 @@ On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on
 
 ### 2. Faire clignoter une LED
 Voici notre porposition de schéma : 
+![WhatsApp Image 2025-12-12 à 10 37 48_c125ae2b](https://github.com/user-attachments/assets/00c05668-78a3-4917-9643-138d6cc16473)
 
 La clock FPGA_CLK1_50 est une 50MHz
 Voici ce que propose quartus
@@ -34,6 +35,9 @@ Voici ce que propose quartus
 
 ![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
 
+
+Avec réduction de fréquence :
+![WhatsApp Image 2025-12-12 à 10 37 48_a5b12a4e](https://github.com/user-attachments/assets/94e73190-fb9f-4d3a-807c-1f922b99e5cf)
 
 
 
