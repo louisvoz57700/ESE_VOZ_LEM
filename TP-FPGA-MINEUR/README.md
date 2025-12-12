@@ -53,7 +53,7 @@ Gestion des encodeurs
 - ![WhatsApp Image 2025-12-12 à 11 29 12_fdd79241](https://github.com/user-attachments/assets/3e0310cd-c0f9-460c-9311-552607601bd9)
 
 - <img width="2212" height="864" alt="image" src="https://github.com/user-attachments/assets/03ddea3f-9e36-49ce-a7e2-ec6fecb05e71" />
-'''VHDL
+```VHDL
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -81,7 +81,7 @@ begin
     o_e <= r1_curr xor r2_prev;
 
 end architecture rtl;
-'''
+```
 
 - Vérification fonctionnelle.
 
