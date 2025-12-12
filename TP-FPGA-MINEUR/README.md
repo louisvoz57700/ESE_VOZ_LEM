@@ -31,6 +31,9 @@ La clock FPGA_CLK1_50 est une 50MHz
 
 ![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
 
+![WhatsApp Image 2025-12-12 à 09 17 42_7998d485](https://github.com/user-attachments/assets/08849df3-ccad-4787-9352-0968210e61e1)
+
+
 ### 3. Simulation
 - Création de testbenches.
 - Vérification fonctionnelle.
