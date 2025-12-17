@@ -49,6 +49,7 @@ La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 Gestion des encodeurs
 
 ### 3. Simulation
+Gestion des encodeurs
 - Création de testbenches.
 - ![WhatsApp Image 2025-12-12 à 11 29 12_fdd79241](https://github.com/user-attachments/assets/3e0310cd-c0f9-460c-9311-552607601bd9)
 
