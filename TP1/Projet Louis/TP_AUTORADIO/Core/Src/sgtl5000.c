@@ -6,7 +6,7 @@
  */
 
 #include "sgtl5000.h"
-
+#include "GPIO_EXTANDER.h"
 static const sgtl5000_registers_t register_map[] = {
 		SGTL5000_CHIP_ID,
 		SGTL5000_CHIP_DIG_POWER,
@@ -61,6 +61,8 @@ static const sgtl5000_registers_t register_map[] = {
 		SGTL5000_DAP_COEF_WR_A2_LSB
 
 };
+
+
 
 HAL_StatusTypeDef sgtl5000_i2c_read_register(h_sgtl5000_t * h_sgtl5000, sgtl5000_registers_t reg_address, uint16_t * p_data)
 {
@@ -207,8 +209,8 @@ HAL_StatusTypeDef sgtl5000_init(h_sgtl5000_t * h_sgtl5000)
 
 	// Enable Zero-cross detect if needed for HP_OUT (bit 5) and ADC (bit 1)
 	// Write CHIP_ANA_CTRL 0x0133
-	mask = 0x0004;	// Unmute all + SELECT_ADC = LINEIN
-//	mask = 0x0000;	// Unmute all + SELECT_ADC = MIC
+//	mask = 0x0004;	// Unmute all + SELECT_ADC = LINEIN
+	mask = 0x0000;	// Unmute all + SELECT_ADC = MIC
 	sgtl5000_i2c_write_register(h_sgtl5000, SGTL5000_CHIP_ANA_CTRL, mask);
 
 	//------------Power up Inputs/Outputs/Digital Blocks---------
@@ -279,3 +281,67 @@ HAL_StatusTypeDef sgtl5000_init(h_sgtl5000_t * h_sgtl5000)
 
 	return ret;
 }
+
+
+void generateTriangle(int16_t *buffer, uint32_t bufferSize, int16_t amplitude)
+{
+    uint32_t i;
+
+    // On travaille en fixed-point pour éviter les arrondis foireux
+    for (i = 0; i < bufferSize; i++) {
+        // Position dans le cycle : 0 → bufferSize-1
+        // On utilise 4 * i pour avoir une résolution plus fine (évite les trous d'arrondi)
+        int32_t phase = (int32_t)(4ULL * i * amplitude / bufferSize);
+
+        if (i < bufferSize / 2) {
+            // Montée : -amplitude → +amplitude
+            buffer[i] = (int16_t)(phase - amplitude);
+        } else {
+            // Descente : +amplitude → -amplitude
+            buffer[i] = (int16_t)(3 * amplitude - phase);
+        }
+    }
+}
+
+void generateSquare(int16_t *buf, uint32_t len, int16_t amp)
+{
+    uint32_t half = len / 2;
+    for (uint32_t i = 0; i < len; i++) {
+        buf[i] = (i < half) ? amp : -amp;
+    }
+}
+
+void updateVUMeter(float level)
+{
+    const int scale = 4096;
+    const int maxLevels = 8;
+
+    // Calcule combien de niveaux doivent être allumés
+    int ledsToLight = (int)(level / scale);
+    if (ledsToLight > maxLevels) ledsToLight = maxLevels;
+
+    // Allume ce qu'il faut
+    for (int i = 0; i <= ledsToLight - 1; i++)
+    {
+        Select_LED('A', i, 1);
+        Select_LED('B', i, 1);
+    }
+
+    // Éteint les autres (optionnel)
+    for (int i = ledsToLight; i <= maxLevels - 1; i++)
+    {
+        Select_LED('A', i, 0);
+        Select_LED('B', i, 0);
+    }
+}
+
+void transmit_mic(h_RC_filter_t* filter,int16_t* txbuf,int16_t* rxbuf,int size)
+{
+	for (int i = 0;i<size;i++)
+	{
+		txbuf[i]=abs((int16_t*)RC_filter_update(filter,rxbuf[i]));
+		//txbuf[i] = rxbuf[i];
+	}
+}
+
+

@@ -29,6 +29,7 @@ typedef struct {
     uint8_t            address;
 } MCP23S17_HandleTypeDef;
 
+void updateVUMeter(float level);
 // ===================================================================
 // Instance globale
 // ===================================================================

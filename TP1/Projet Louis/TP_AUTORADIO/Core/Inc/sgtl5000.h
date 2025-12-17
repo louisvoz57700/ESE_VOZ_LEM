@@ -9,6 +9,7 @@
 #define SGTL5000_SGTL5000_H_
 
 #include <main.h>
+#include "RCFilter.h"
 
 typedef enum sgtl5000_registers_enum
 {
@@ -77,6 +78,8 @@ HAL_StatusTypeDef sgtl5000_i2c_set_bit(h_sgtl5000_t * h_sgtl5000, sgtl5000_regis
 HAL_StatusTypeDef sgtl5000_i2c_clear_bit(h_sgtl5000_t * h_sgtl5000, sgtl5000_registers_t reg_address, uint16_t clear_mask);
 
 HAL_StatusTypeDef sgtl5000_init(h_sgtl5000_t * h_sgtl5000);
+void transmit_mic(h_RC_filter_t* filter,int16_t* txbuf,int16_t* rxbuf,int size);
+
 
 
 #endif /* SGTL5000_SGTL5000_H_ */

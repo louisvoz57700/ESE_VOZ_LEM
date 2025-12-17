@@ -33,17 +33,21 @@
 #include "drv_uart1.h"
 #include "GPIO_EXTANDER.h"
 #include "sgtl5000.h"
+#include "RCFilter.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define AUDIO_BUFFER_SIZE 256
+#define AUDIO_BUFFER_SIZE_RX 256
+#define AUDIO_BUFFER_SIZE_TX 256
 QueueHandle_t uartQueue;      // Queue pour les caractères UART
 uint8_t rx_byte; // caractère reçu
-int16_t txBuffer[AUDIO_BUFFER_SIZE];
-int16_t rxBuffer[AUDIO_BUFFER_SIZE];
+int16_t txBuffer[AUDIO_BUFFER_SIZE_TX];
+int16_t rxBuffer[AUDIO_BUFFER_SIZE_RX];
 
 extern MCP23S17_HandleTypeDef hmcp23s17;
+
+h_RC_filter_t filter = {0};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -92,6 +96,7 @@ int LED(h_shell_t * h_shell, int argc, char ** argv)
 {
 	int numero;
 	int size;
+	//Select_LED('B', 1,1);
 	if (argv[1]=="\r")
 	{
 		numero = atoi(argv[0]);
@@ -105,6 +110,7 @@ int LED(h_shell_t * h_shell, int argc, char ** argv)
 		}
 		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"c'est fait chef");
 	}
+
 	else if (argv[1]=="1")
 	{
 		numero = atoi(argv[0]) * 10 + atoi(argv[1]);
@@ -120,12 +126,30 @@ int LED(h_shell_t * h_shell, int argc, char ** argv)
 
 }
 
+int cutoff(h_shell_t * h_shell, int argc, char ** argv)
+{
+	int size;
+	if (atoi(argv[1])>0 && atoi(argv[1]) < 1000000000)
+	{
+		RC_filter_init(&filter,atoi(argv[1]), 48000);
+		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"la frequence a bien ete change");
+
+	}
+	else{
+		size = snprintf(h_shell->print_buffer,BUFFER_SIZE,"la frequence est trop haut ou trop basse !");
+	}
+	drv_uart1_transmit(h_shell->print_buffer,size);
+	return 0;
+}
+
 
 void Task_shell(void)
 {
 	  shell_init(&h_shell);
 	  shell_add(&h_shell,'f', fonction, "Une fonction inutile");
 	  shell_add(&h_shell,'L',LED,"Une fonction pour allumer les LEDs");
+	  shell_add(&h_shell,'C',cutoff,"Une fonction pour changer la fréquence de coupure");
+
 	  shell_run(&h_shell);
 }
 
@@ -135,19 +159,8 @@ void Task_LED(void const *argument)
 
     for(;;)
     {
-    	//generateTriangle(txBuffer, AUDIO_BUFFER_SIZE, 10000);  // amplitude ≈ 10k / 32767
-    	Select_LED('A', 1,1);
-    	Select_LED('A', 0,1);
-    	Select_LED('A', 7,1);
-    	Select_LED('B', 1,1);
-    	vTaskDelay(200);
-    	Select_LED('A', 1,0);
-		Select_LED('A', 0,1);
-		Select_LED('A', 7,0);
-		Select_LED('B', 1,0);
-    	vTaskDelay(200);
 
-
+    	transmit_mic(&filter,&txBuffer,&rxBuffer,AUDIO_BUFFER_SIZE_RX);
     }
 }
 /* USER CODE END 0 */
@@ -221,15 +234,16 @@ int main(void)
 
   sgtl5000_init(&h_sgtl5000);
 
-  generateTriangle(txBuffer, AUDIO_BUFFER_SIZE, 10000);
+  //generateTriangle(txBuffer, AUDIO_BUFFER_SIZE, 10000);
   //generateSquare(txBuffer, AUDIO_BUFFER_SIZE, 30000);
-  HAL_SAI_Transmit_DMA(&hsai_BlockA2, (int16_t*)txBuffer, AUDIO_BUFFER_SIZE);
-  HAL_SAI_Receive_DMA(&hsai_BlockB2, (int16_t*)rxBuffer, AUDIO_BUFFER_SIZE);
+  HAL_SAI_Transmit_DMA(&hsai_BlockA2, (int16_t*)txBuffer, AUDIO_BUFFER_SIZE_TX);
+  HAL_SAI_Receive_DMA(&hsai_BlockB2, (int16_t*)rxBuffer, AUDIO_BUFFER_SIZE_RX);
+
+  RC_filter_init(&filter,10000, 48000);
 
 
-
-  xTaskCreate(Task_shell, "Shell", 256, NULL, 1, NULL);
-  xTaskCreate(Task_LED, "LED", 256, NULL, 1, NULL);
+  xTaskCreate(Task_shell, "Shell", 512, NULL, 1, NULL);
+  xTaskCreate(Task_LED, "LED", 512, NULL, 1, NULL);
 
   /* USER CODE END 2 */
 
@@ -344,33 +358,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 
-void generateTriangle(int16_t *buffer, uint32_t bufferSize, int16_t amplitude)
-{
-    uint32_t i;
-
-    // On travaille en fixed-point pour éviter les arrondis foireux
-    for (i = 0; i < bufferSize; i++) {
-        // Position dans le cycle : 0 → bufferSize-1
-        // On utilise 4 * i pour avoir une résolution plus fine (évite les trous d'arrondi)
-        int32_t phase = (int32_t)(4ULL * i * amplitude / bufferSize);
-
-        if (i < bufferSize / 2) {
-            // Montée : -amplitude → +amplitude
-            buffer[i] = (int16_t)(phase - amplitude);
-        } else {
-            // Descente : +amplitude → -amplitude
-            buffer[i] = (int16_t)(3 * amplitude - phase);
-        }
-    }
-}
-
-void generateSquare(int16_t *buf, uint32_t len, int16_t amp)
-{
-    uint32_t half = len / 2;
-    for (uint32_t i = 0; i < len; i++) {
-        buf[i] = (i < half) ? amp : -amp;
-    }
-}
 
 void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
 {
@@ -381,6 +368,19 @@ void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
 {
     //generateTriangle(&txBuffer[AUDIO_BUFFER_SIZE/2], AUDIO_BUFFER_SIZE/2, 12000);
 }
+
+
+void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
+{
+    int32_t sum = 0;
+    for(int i = 0; i < AUDIO_BUFFER_SIZE_RX; i++) {
+        sum += abs(rxBuffer[i]);
+    }
+    // amplitude moyenne
+    float amplitude = (float)sum / (float)AUDIO_BUFFER_SIZE_RX;
+    updateVUMeter(amplitude);
+}
+
 
 /* USER CODE END 4 */
 
