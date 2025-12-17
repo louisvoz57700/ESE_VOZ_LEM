@@ -1,8 +1,0 @@
-../Core/Src/main.c:66:5:__io_putchar	1
-../Core/Src/main.c:72:12:fonction	2
-../Core/Src/main.c:87:12:addition	2
-../Core/Src/main.c:99:6:task_shell	1
-../Core/Src/main.c:113:6:HAL_UART_RxCpltCallback	2
-../Core/Src/main.c:127:5:main	3
-../Core/Src/main.c:195:6:SystemClock_Config	4
-../Core/Src/main.c:248:6:Error_Handler	1

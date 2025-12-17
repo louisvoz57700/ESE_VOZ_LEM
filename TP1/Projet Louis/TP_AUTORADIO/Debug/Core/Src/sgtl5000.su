@@ -1,9 +1,0 @@
-../Core/Src/sgtl5000.c:67:19:sgtl5000_i2c_read_register	48	static
-../Core/Src/sgtl5000.c:88:19:sgtl5000_i2c_write_register	40	static
-../Core/Src/sgtl5000.c:109:19:sgtl5000_i2c_set_bit	24	static
-../Core/Src/sgtl5000.c:125:19:sgtl5000_i2c_clear_bit	24	static
-../Core/Src/sgtl5000.c:141:19:sgtl5000_init	24	static
-../Core/Src/sgtl5000.c:286:6:generateTriangle	64	static
-../Core/Src/sgtl5000.c:306:6:generateSquare	32	static
-../Core/Src/sgtl5000.c:314:6:updateVUMeter	40	static
-../Core/Src/sgtl5000.c:338:6:transmit_mic	32	static
