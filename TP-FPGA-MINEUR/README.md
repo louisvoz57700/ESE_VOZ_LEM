@@ -46,6 +46,9 @@ La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 
 11. Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
 
+**Chenillard**
+
+
 Gestion des encodeurs
 
 ### 3. Simulation
