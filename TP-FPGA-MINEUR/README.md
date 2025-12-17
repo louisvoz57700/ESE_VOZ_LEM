@@ -90,11 +90,10 @@ Sur Modelsim :
 <img width="2338" height="194" alt="image" src="https://github.com/user-attachments/assets/3843c69e-5392-47f0-a00e-400f1df53125" />
 
 - Vérification fonctionnelle.
-- ```VHDL
+-  ```VHDL
   library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
 entity encodeur is
     generic (
         C_WIDTH : integer := 10 -- 10 LEDs disponibles
@@ -107,7 +106,6 @@ entity encodeur is
         o_led_vector   : out std_logic_vector(C_WIDTH-1 downto 0) 
     );
 end entity encodeur;
-
 architecture rtl of encodeur is
     signal r_a_curr, r_a_prev : std_logic;
     signal r_b_curr, r_b_prev : std_logic;
@@ -123,20 +121,17 @@ begin
             -- Synchronisation
             r_a_curr <= i_a; r_a_prev <= r_a_curr;
             r_b_curr <= i_b; r_b_prev <= r_b_curr;
-
             -- Logique d'incrémentation
             if (r_a_curr = '1' and r_a_prev = '0' and r_b_curr = '0') or
                (r_a_curr = '0' and r_a_prev = '1' and r_b_curr = '1') then
-                r_counter <= r_counter + 1;
-            
+                r_counter <= r_counter + 1;   
             -- Logique de décrémentation
             elsif (r_b_curr = '1' and r_b_prev = '0' and r_a_curr = '0') or
                   (r_b_curr = '0' and r_b_prev = '1' and r_a_curr = '1') then
                 r_counter <= r_counter - 1;
             end if;
         end if;
-    end process;
-    
+    end process;    
     o_led_vector <= std_logic_vector(r_counter);
 end architecture rtl;
 ```
