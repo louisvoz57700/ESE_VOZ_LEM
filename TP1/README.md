@@ -1,13 +1,17 @@
 <h1>📘 TP1 – AUTO RADIO</h1>
 <h3>Projet ESE_VOZ_LEM</h3>
 
-<p>
-Bienvenue dans le dépôt de notre premier <strong>Travail Pratique (TP1)</strong>.<br>
-Ce projet est basé sur la carte <strong>NUCLEO-L476RG</strong> et a pour but d’explorer la configuration matérielle de base, 
-le contrôle GPIO, la communication UART, et l’utilisation de FreeRTOS.
-</p>
+Bienvenue dans le dépôt de notre premier **Travail Pratique (TP1)**.  
+Ce projet est basé sur la carte **NUCLEO-L476RG** et a pour but d’explorer la configuration matérielle de base, le contrôle GPIO, la communication UART, et l’utilisation de FreeRTOS et surtout l'utilisation d'un codec audio.
 
-<hr>
+## Organisation du dépôt
+
+Le dépôt est structuré de manière à faciliter la navigation et l'accès aux différents éléments du projet :
+
+- **IMG/** : contient toutes les images utilisées dans le projet (schémas, captures d’écran, etc.).  
+- **DOCS/** : contient les documents de référence, comme les datasheets et le sujet du TP.  
+- **SOFTWARE/** : contient tout le code source développé pour le TP.
+
 
 <h2>🟢 1. Démarrage</h2>
 
@@ -91,8 +95,8 @@ En regardant le schématic du shield et en comparant le .ioc, on en déduit que 
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/3e514302-aa08-4476-8c48-a7a9a316898a" width="30%">
-  <img src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" width="30%">
-  <img src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" width="30%">
+  <img src="https://github.com/user-attachments/assets/29e93bea-73fe-4a36-8c33-0d3e4cb3a556" width="15%">
+  <img src="https://github.com/user-attachments/assets/a63aaa8f-a0f3-4909-8431-63d5fbe38934" width="25%">
 </p>
 
 <h3>2.2 Tests</h3>
@@ -156,25 +160,26 @@ Le L fait appel à la fonction LED, le 15 signifie la 15ème LED et le 1 est l'�
 <h2>3 Le CODEC Audio SGTL5000</h2>
 <h2>3.1 Configuration préalables</h2>
 En regardant le schematic, on voit bien que l'on va devoir travailler avec l'I2C2 (PB10 - SCL et PB11 - SDA) 
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/I2C+SAI.png" />
-</p>
+<div style="text-align: center;">
+    <img src="IMG/I2C+SAI.png" width="600" alt="image" />
+</div>
 <h2>3.2 Configuration du CODEC par l’I2C</h2>
 On regarde l'horloge MCLK :
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/MCLK.png" />
-</p>
-L'horloge MCLK sert une horloge précise au codec (pour les PLL, échantillonage,...). Elle est par conséquent rapide et multiple de la fréquence d'échantillonage choisi : 12.26MHz = 48kHz * 256 
+<div style="text-align: center;">
+    <img src="IMG/MCLK.png" width="600" alt="image" />
+</div>
+L'horloge MCLK sert d'horloge précise au codec (pour les PLL, échantillonage,...). Elle est par conséquent rapide et multiple de la fréquence d'échantillonage choisi : 12.26MHz = 48kHz * 256. On voit que la fréquence élevé réduit fortement la qualité de l'échelon, on y voit du dépassement et de la distorsion.
+
 
 
 On essaye l'I2C et on trouve finalement que l'adresse est bien 0xA0
-<p>
-<img width="2092" height="1028" alt="image" src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" />
-</p>
+<div style="text-align: center;">
+    <img src="https://github.com/user-attachments/assets/b8dc9841-819c-4040-ae68-d8fe5694a3ed" width="600" alt="image" />
+</div>
 On peut alors identifier les trames I2C, seulement lors de l'initialisation:
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/I2C_TRAME.JPG" />
-</p>
+<div style="text-align: center;">
+    <img src="IMG/I2C_TRAME.JPG" width="600" alt="image" />
+</div>
 
 <h2>3.3 Signaux I2S</h2>
 
@@ -192,17 +197,18 @@ HAL_SAI_Receive_DMA(&hsai_BlockB2, (int16_t*)rxBuffer, AUDIO_BUFFER_SIZE_RX);
 </code></pre>
 
 On peut alors observer dans un premier temps SCLK :
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/SCLK.png" />
+<p align="center">
+  <img src="IMG/SCLK.png" alt="demo" width="600">
 </p>
+
 
 Le but de cette horloge est de cadencé les bits transmis via I2S. Donc à chaque front montant, le codec va lire un bit. On peut calculer sa fréquence :
 
 $f_{SCLK}=f_s \times NbBitsParCanal\times NbCanaux = 48kHz \times 32\,(2 \times 16 bits)  \times 2 = 1.536 MHz $
 
 Et la dernière clock est la LRCLK :
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/LRCLK.png " />
+<p align="center">
+  <img src="IMG/LRCLK.png " alt="demo" width="600">
 </p>
 
 LRCLK indique quel canal est envoyé donc :
@@ -215,8 +221,8 @@ $HIGH$ -> canal droit
 
 On crée une fonction *generateTriangle()* qui remplit un buffer avec un triangle. De plus on oublie pas de mettre le DMA_Transmit en circulaire. 
 En remplissant le buffer à l'initialisation, on aura bien une sortie triangulaire :
-<p>
-<img width="2092" height="1028" alt="image" src="IMG/triangle.jpeg " />
+<p align="center">
+  <img src="IMG/triangle.jpeg " alt="demo" width="600">
 </p>
 
 > ⚠️ **Remarque importante :** Nous avons eu beaucoup de mal à générer ce signal car l'initialisation de notre codec n'était pas bonne
@@ -227,7 +233,7 @@ Pour la création du Vumètre, on reprend tout ce qui a était réalisé avant. 
 
 Puis lorsque l'on a la moyenne, on peut allumer le nombre de LED correspondant. On divise le MAX_RANGE par 8 ( car on a 8 lignes de LEDs)
 
-On peut alors appeler cette fonction dans une task :
+On peut alors appeler cette fonction dans l'interruption (en considérant qu'elle s'éxecute assez rapidement):
 <pre><code class="language-c">
 void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
 {
@@ -243,14 +249,17 @@ void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
 
 On obtient alors :
 <p align="center">
-  <img src="IMG/MIC.gif" alt="demo" width="300">
+  <img src="IMG/MIC.gif" alt="demo" width="600">
 </p>
 
 ## 5 - Filtres RC
+Dans un premier temps, on effectue tous les calculs sur feuille :
+<div style="display: flex; align-items: flex-start; justify-content: center; gap: 20px;">
+  <div>
+    <img src="https://github.com/user-attachments/assets/074ad9aa-ca63-4d86-9afe-361f6f40562f" alt="demo" width="450">
+  </div>
 
-![WhatsApp Image 2025-12-10 à 11 52 04_48442d18](https://github.com/user-attachments/assets/074ad9aa-ca63-4d86-9afe-361f6f40562f)
-
-```c
+  ```c
 void RC_filter_init(h_RC_filter_t * h_RC_filter, uint16_t cutoff_frequency, uint16_t sampling_frequency)
 {
     uint32_t b_value = 0;
@@ -279,6 +288,11 @@ uint16_t RC_filter_update(h_RC_filter_t * h_RC_filter, uint16_t input)
     return output;
 }
 ```
+  <div>
+
+  </div>
+</div>
+Grâce à notre feuille, on peut facilement créer le filtre RC sur STM32CubeIDE avec le code ci-dessus.
 
 On rajoute : shell_add(&shell_instance, 'c', filtre_RC, "filtre_RC"); pour pouvoir modifier la fréquence de coupure dans le shell.
 
@@ -300,6 +314,41 @@ Atténuation : Le son passé est divisé par 2 avant l'addition pour simuler une
 Sauvegarde pour le futur : L'échantillon actuel (brut) est enregistré dans ce même tableau mémoire à l'index courant. Il deviendra ainsi l'écho lorsqu'on repassera sur cet index plus tard.
 
 Gestion du Buffer Circulaire : L'index de lecture/écriture avance d'un pas. S'il atteint la fin du tableau de délai, il retourne instantanément au début (index 0). C'est la taille de ce tableau qui détermine la durée du retard (en ms).
+
+  ```c
+void Process_Audio_Buffer(int16_t *src, int16_t *dst, uint32_t len_in_bytes)
+{
+	uint16_t *pSrc = (uint16_t*)src;
+	uint16_t *pDst = (uint16_t*)dst;
+
+	uint32_t num_samples = len_in_bytes / 2;
+
+	for (uint32_t i = 0; i < num_samples; i++)
+	{
+
+		int16_t input_sample=pSrc[i];
+
+		// 1. Lire l'échantillon qui a été stocké il y a longtemps (l'écho)
+		int16_t delayed_sample = delay_buffer[delay_index];
+
+		// 2. Calculer la sortie : Son actuel + (Echo * volume)
+		// On divise par 2 l'écho pour qu'il soit moins fort (decay)
+		int16_t output_sample = input_sample + (delayed_sample / 2);
+
+		// 3. Ecrire le son actuel dans la mémoire pour le futur
+		delay_buffer[delay_index] = input_sample;
+
+		// 4. Avancer l'index et boucler si on arrive au bout (Buffer Circulaire)
+		delay_index++;
+		if (delay_index >= DELAY_BUF_SIZE) {
+			delay_index = 0;
+		}
+
+		// 5. Envoyer vers le DAC
+		pDst[i] = output_sample;
+	}
+}
+```
 
 <h2>🧩 Résumé des objectifs</h2>
 
