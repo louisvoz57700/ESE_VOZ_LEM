@@ -64,7 +64,6 @@ printf("Bonjour Antonio y Louis\r\n");
   <img src="https://github.com/user-attachments/assets/92725134-4f12-49b1-810d-fcdc11942f61" 
        alt="Sortie série visible" width="544" height="234">
 </p>
-
 <hr>
 
 <h3>Étape 5 — Activation de FreeRTOS</h3>
@@ -80,6 +79,7 @@ Activez <strong>FreeRTOS</strong> via <strong>CMSIS V1</strong>.<br>
 <p>
 <img width="946" height="404" alt="image" src="https://github.com/user-attachments/assets/8c44c48f-9402-4774-bd47-2c54fd7cf134" />
 Le projet est dans Dossier Shell
+On rajoutera d'autre fonction par la suite
 
 </p>
 <h2>🔵 2. Le GPIO Expander et le VU-Mètre</h2>
@@ -219,7 +219,7 @@ En remplissant le buffer à l'initialisation, on aura bien une sortie triangulai
 <img width="2092" height="1028" alt="image" src="IMG/triangle.jpeg " />
 </p>
 
-> ⚠️ **Remarque importante :** Nous avons eu beaucoup de mal à générer ce signal car l'initialisation de notre n'était pas bonne
+> ⚠️ **Remarque importante :** Nous avons eu beaucoup de mal à générer ce signal car l'initialisation de notre codec n'était pas bonne
 
 
 <h2>3.5-4 Visualisation</h2>
@@ -308,7 +308,7 @@ Gestion du Buffer Circulaire : L'index de lecture/écriture avance d'un pas. S'i
   <li>✅ Faire fonctionner le GPIO extander
   <li>✅ Faire fonctionner le codec
   <li>✅ Réaliser le Vumeter
-  <li>⏳ Faire la modification de voix
+  <li>✅ Faire la modification de voix
 </ul>
 
 <hr>
