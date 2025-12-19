@@ -212,8 +212,117 @@ Effet à l’écran :
 
 https://github.com/user-attachments/assets/c5d05790-0866-4dea-bc2f-7f806b71dd6d
 
+```VHDL
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
+entity hdmi_controler is
+    generic (
+        H_RES : natural := 720;
+        V_RES : natural := 480
+    );
+    port (
+        i_clk   : in  std_logic;  -- horloge pixel 27 MHz
+        i_rst_n : in  std_logic;
+		  i_X : in natural;
+		  i_Y : in natural;
 
+        -- HDMI output
+        o_hdmi_tx_clk : out std_logic;
+        o_hdmi_tx_d   : out std_logic_vector(23 downto 0);
+        o_hdmi_tx_de  : out std_logic;
+        o_hdmi_tx_hs  : out std_logic;
+        o_hdmi_tx_vs  : out std_logic
+    );
+end entity hdmi_controler;
+
+architecture rtl of hdmi_controler is
+
+    -- Timings 480p (720x480 @ 60 Hz)
+    constant H_FP    : natural := 16;
+    constant H_PW    : natural := 62;
+    constant H_BP    : natural := 60;
+    constant H_TOTAL : natural := H_RES + H_FP + H_PW + H_BP;
+
+    constant V_FP    : natural := 9;
+    constant V_PW    : natural := 6;
+    constant V_BP    : natural := 30;
+    constant V_TOTAL : natural := V_RES + V_FP + V_PW + V_BP;
+
+    signal h_cnt : natural range 0 to H_TOTAL-1 := 0;
+    signal v_cnt : natural range 0 to V_TOTAL-1 := 0;
+
+    signal de_int : std_logic;
+
+begin
+
+    ------------------------------------------------------------------
+    -- Horloge pixel HDMI
+    ------------------------------------------------------------------
+    o_hdmi_tx_clk <= i_clk;
+
+    ------------------------------------------------------------------
+    -- Compteurs horizontal / vertical
+    ------------------------------------------------------------------
+    process(i_clk)
+    begin
+        if rising_edge(i_clk) then
+            if i_rst_n = '0' then
+                h_cnt <= 0;
+                v_cnt <= 0;
+            else
+                if h_cnt = H_TOTAL-1 then
+                    h_cnt <= 0;
+                    if v_cnt = V_TOTAL-1 then
+                        v_cnt <= 0;
+                    else
+                        v_cnt <= v_cnt + 1;
+                    end if;
+                else
+                    h_cnt <= h_cnt + 1;
+                end if;
+            end if;
+        end if;
+    end process;
+
+    ------------------------------------------------------------------
+    -- Synchronisations HDMI
+    ------------------------------------------------------------------
+    o_hdmi_tx_hs <= '0'
+        when (h_cnt >= H_RES + H_FP and h_cnt < H_RES + H_FP + H_PW)
+        else '1';
+
+    o_hdmi_tx_vs <= '0'
+        when (v_cnt >= V_RES + V_FP and v_cnt < V_RES + V_FP + V_PW)
+        else '1';
+
+    ------------------------------------------------------------------
+    -- Data Enable (zone visible)
+    ------------------------------------------------------------------
+    de_int <= '1' when (h_cnt < H_RES and v_cnt < V_RES) else '0';
+    o_hdmi_tx_de <= de_int;
+
+    ------------------------------------------------------------------
+    -- Génération des pixels
+    -- fond blanc + carré noir 10x10
+    ------------------------------------------------------------------
+    o_hdmi_tx_d <=
+        -- carré noir
+        (others => '0')
+            when (de_int = '1' and
+                  h_cnt >= i_X and h_cnt < i_X + 5 and
+                  v_cnt >= i_Y and v_cnt < i_Y +5 ) else
+
+        -- fond blanc
+        (x"FF" & x"FF" & x"FF")
+            when de_int = '1' else
+
+        -- hors zone active
+        (others => '0');
+
+end architecture rtl;
+```
 ## Mémoriser 
 - Expliquez ce qu'est une mémoire dual-port.
 - Proposer un schéma pour mémoiriser les pixels.
