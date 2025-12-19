@@ -327,5 +327,7 @@ end architecture rtl;
 - Expliquez ce qu'est une mémoire dual-port :
   une mémoire qui possède deux entrées/sorties indépendantes.
 - Proposer un schéma pour mémoiriser les pixels.
+- <img width="2036" height="1496" alt="image" src="https://github.com/user-attachments/assets/222e6982-c690-4ee3-bb74-2d62ec075ce2" />
+
 
 ## 📂 Arborescence du projet
