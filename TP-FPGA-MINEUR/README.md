@@ -185,12 +185,24 @@ begin
 end architecture rtl;
 ```
 
+https://github.com/user-attachments/assets/a947c91c-28af-4d59-b5d8-64f5598171c0
+
+
+
 **Contrôleur HDMI**
 
 On refait le fichier hdmi_controler , et on peut donc changer ce qui s'affiche à l'écran :
 
 <img width="1258" height="767" alt="image" src="https://github.com/user-attachments/assets/1c52c30a-5700-435d-8baa-ae291ab9909a" />
 
+Effet à l’écran :
 
+🔴 Rouge varie horizontalement (selon x)
+
+🟢 Vert varie verticalement (selon y)
+
+🔵 Bleu est constant à 0
+
+➡️ On obtient un dégradé rouge/vert, noir en bleu.
 
 ## 📂 Arborescence du projet
