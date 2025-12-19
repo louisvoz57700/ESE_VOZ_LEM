@@ -205,4 +205,8 @@ Effet à l’écran :
 
 ➡️ On obtient un dégradé rouge/vert, noir en bleu.
 
+## Mémoriser 
+- Expliquez ce qu'est une mémoire dual-port.
+- Proposer un schéma pour mémoiriser les pixels.
+
 ## 📂 Arborescence du projet
