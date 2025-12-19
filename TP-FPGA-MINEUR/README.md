@@ -186,6 +186,10 @@ end architecture rtl;
 
 **Contrôleur HDMI**
 
+On refait le fichier hdmi_controler , et on peut donc changer ce qui s'affiche à l'écran :
+
+<img width="1258" height="767" alt="image" src="https://github.com/user-attachments/assets/1c52c30a-5700-435d-8baa-ae291ab9909a" />
+
 
 
 ## 📂 Arborescence du projet
