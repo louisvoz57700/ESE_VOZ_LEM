@@ -329,5 +329,62 @@ end architecture rtl;
 - Proposer un schéma pour mémoiriser les pixels.
 - <img width="2036" height="1496" alt="image" src="https://github.com/user-attachments/assets/222e6982-c690-4ee3-bb74-2d62ec075ce2" />
 
+```VHDL
+--mémoire
+	-- Calcul de l'adresse d'écriture =
+    s_ram_addr_write <= s_pos_y * h_res + s_pos_x;
+    
+    -- Calcul de l'adresse de lecture 
+    --  On convertit les unsigned en integer pour le calcul
+    s_ram_addr_read  <= to_integer(s_scan_y) * h_res + to_integer(s_scan_x);
+
+    --  DPRAM
+    inst_PORT_AB : component dpram
+    generic map (
+        mem_size    => h_res * v_res, 
+        data_width  => C_RAM_DATA_WIDTH -- 1 bit par pixel
+    )
+    port map (    
+        -- PORT A : Horloge 50MHz
+        i_clk_a  => i_clk_50,
+        i_addr_a => s_ram_addr_write,
+        i_data_a => "1",    
+        i_we_a   => '1',   
+        -- o_q_a non connecté
+
+        -- PORT B : Horloge 27MHz
+        i_clk_b  => s_clk_27,
+        i_addr_b => s_ram_addr_read,
+        i_data_b => (others => '0'), 
+        i_we_b   => '0',             -- Lecture seule
+        o_q_b    => s_ram_q_b        
+    );
+
+
+    -- AFFICHAGE FINAL
+
+    process(s_scan_x, s_scan_y, s_pos_x, s_pos_y, s_de, s_ram_q_b)
+        variable v_scan_x_int : integer;
+        variable v_scan_y_int : integer;
+    begin
+        v_scan_x_int := to_integer(s_scan_x);
+        v_scan_y_int := to_integer(s_scan_y);
+
+        if s_de = '1' then
+            if (v_scan_x_int >= s_pos_x and v_scan_x_int < s_pos_x + 16) and
+               (v_scan_y_int >= s_pos_y and v_scan_y_int < s_pos_y + 16) then
+                o_hdmi_tx_d <= x"FF0000"; -- Curseur ROUGE pour le distinguer du trait
+            
+            elsif s_ram_q_b(0) = '1' then
+                o_hdmi_tx_d <= x"FFFFFF"; -- Trait BLANC 
+                
+            else
+                o_hdmi_tx_d <= x"000050"; -- Fond Bleu Foncé
+            end if;
+        else
+            o_hdmi_tx_d <= (others => '0');
+        end if;
+    end process;
+	```
 
 ## 📂 Arborescence du projet
