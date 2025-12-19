@@ -197,6 +197,7 @@ On refait le fichier hdmi_controler , et on peut donc changer ce qui s'affiche �
 
 Effet à l’écran :
 
+
 🔴 Rouge varie horizontalement (selon x)
 
 🟢 Vert varie verticalement (selon y)
@@ -204,6 +205,14 @@ Effet à l’écran :
 🔵 Bleu est constant à 0
 
 ➡️ On obtient un dégradé rouge/vert, noir en bleu.
+
+## Déplacement d'un pixel
+
+
+
+https://github.com/user-attachments/assets/c5d05790-0866-4dea-bc2f-7f806b71dd6d
+
+
 
 ## Mémoriser 
 - Expliquez ce qu'est une mémoire dual-port.
