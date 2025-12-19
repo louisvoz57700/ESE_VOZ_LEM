@@ -324,7 +324,8 @@ begin
 end architecture rtl;
 ```
 ## Mémoriser 
-- Expliquez ce qu'est une mémoire dual-port.
+- Expliquez ce qu'est une mémoire dual-port :
+  une mémoire qui possède deux entrées/sorties indépendantes.
 - Proposer un schéma pour mémoiriser les pixels.
 
 ## 📂 Arborescence du projet
