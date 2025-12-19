@@ -184,19 +184,8 @@ begin
 end architecture rtl;
 ```
 
-### 4. Synthèse & Implémentation
-- Synthèse.
-- Placement & routage.
-- Résolution des warnings/erreurs.
+**Contrôleur HDMI**
 
-### 5. Téléversement sur FPGA
-- Génération du bitstream.
-- Programmation de la carte.
 
-### 6. Tests et validation
-- Comparaison simulation vs matériel.
-- Analyse des écarts éventuels.
-
----
 
 ## 📂 Arborescence du projet
