@@ -387,4 +387,270 @@ end architecture rtl;
     end process;
 	```
 
+**Effacement**
+Ici on veut pouvoir effacer l'écran lors de l'appui sur un bouton (par exemple sur l'encodeur gauche). C'est plus compliqué qu'il n'y parait : Il faut parcourir toutes les adresses de la RAM pour y écrire un zéro. C'est le dernier exercice, ici vous ne serez plus guidés.
+
+Expliquez comment résoudre le problème :
+Nous allons créer une petite "machine à états" :
+
+État IDLE : On attend. Si on appuie sur le bouton, on passe à l'état CLEAR.
+
+État CLEAR : Un compteur défile de 0 à la fin de la mémoire. À chaque cycle d'horloge, on écrit 0. Une fois fini, on retourne à IDLE.
+
+Il faut donc placer un Multiplexeur juste avant l'entrée de la RAM pour choisir qui (des encodeurs ou du compteur) a le droit de parler à la mémoire.
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library pll;
+use pll.all;
+
+entity telecran is
+    port (
+        -- FPGA
+        i_clk_50 : in std_logic;
+
+        -- HDMI
+        io_hdmi_i2c_scl : inout std_logic;
+        io_hdmi_i2c_sda : inout std_logic;
+        o_hdmi_tx_clk   : out std_logic;
+        o_hdmi_tx_d     : out std_logic_vector(23 downto 0);
+        o_hdmi_tx_de    : out std_logic;
+        o_hdmi_tx_hs    : out std_logic;
+        i_hdmi_tx_int   : in std_logic;
+        o_hdmi_tx_vs    : out std_logic;
+
+        -- KEYs
+        i_rst_n : in std_logic;
+
+        -- LEDs
+        o_leds : out std_logic_vector(9 downto 0);
+        o_de10_leds : out std_logic_vector(7 downto 0);
+
+        -- Coder
+        i_left_ch_a : in std_logic; -- Axe X
+        i_left_ch_b : in std_logic;
+        i_left_pb   : in std_logic; -- Bouton pour effacer
+        i_right_ch_a : in std_logic; -- Axe Y
+        i_right_ch_b : in std_logic;
+        i_right_pb   : in std_logic
+    );
+end entity telecran;
+
+architecture rtl of telecran is
+
+    component I2C_HDMI_Config 
+        port (
+            iCLK : in std_logic;
+            iRST_N : in std_logic;
+            I2C_SCLK : out std_logic;
+            I2C_SDAT : inout std_logic;
+            HDMI_TX_INT  : in std_logic
+        );
+    end component;
+    
+    component pll 
+        port (
+            refclk : in std_logic;
+            rst : in std_logic;
+            outclk_0 : out std_logic;
+            locked : out std_logic
+        );
+    end component;
+    
+     component dpram
+    generic (
+        mem_size    : natural := 720 * 480;
+        data_width  : natural := 8
+    );
+    port (    
+        i_clk_a     : in std_logic;
+        i_clk_b     : in std_logic;
+        i_data_a    : in std_logic_vector(data_width-1 downto 0);
+        i_data_b    : in std_logic_vector(data_width-1 downto 0);
+        i_addr_a    : in natural range 0 to mem_size-1;
+        i_addr_b    : in natural range 0 to mem_size-1;
+        i_we_a      : in std_logic := '1';
+        i_we_b      : in std_logic := '1';
+        o_q_a       : out std_logic_vector(data_width-1 downto 0);
+        o_q_b       : out std_logic_vector(data_width-1 downto 0)
+    );
+    end component;
+
+    constant h_res : natural := 720;
+    constant v_res : natural := 480;
+    constant C_MEM_SIZE : natural := h_res * v_res;
+
+    signal s_clk_27 : std_logic;
+    signal s_rst_n : std_logic;
+    
+    -- Signaux HDMI
+    signal s_scan_x : unsigned(11 downto 0);
+    signal s_scan_y : unsigned(11 downto 0);
+    signal s_de     : std_logic; 
+
+    -- Signaux Position Curseur
+    signal s_pos_x  : integer range 0 to H_RES-1;
+    signal s_pos_y  : integer range 0 to V_RES-1;
+
+    -- Signaux RAM
+    constant C_RAM_DATA_WIDTH : integer := 1;
+    
+    -- Adresses "Candidats" (ceux qui veulent accéder à la RAM)
+    signal s_ram_addr_draw  : natural range 0 to C_MEM_SIZE-1;
+    signal s_ram_addr_read  : natural range 0 to C_MEM_SIZE-1;
+    
+    -- Signaux internes RAM
+    signal s_ram_q_b        : std_logic_vector(C_RAM_DATA_WIDTH-1 downto 0);
+    
+    ----------------------------------------------------------------------
+    -- SIGNAUX POUR L'EFFACEMENT (MACHINE A ETATS)
+    ----------------------------------------------------------------------
+    type t_state is (IDLE, CLEAR);
+    signal s_state : t_state := IDLE;
+    
+    -- Compteur pour parcourir toute la RAM
+    signal s_clear_cnt : natural range 0 to C_MEM_SIZE-1 := 0;
+    
+    -- Signaux finaux envoyés à la RAM (après multiplexage)
+    signal s_final_addr_a : natural range 0 to C_MEM_SIZE-1;
+    signal s_final_data_a : std_logic_vector(C_RAM_DATA_WIDTH-1 downto 0);
+
+begin
+    o_leds <= (others => '0');
+    o_de10_leds <= (others => '0');
+    
+    pll0 : component pll 
+        port map (
+            refclk => i_clk_50,
+            rst => not(i_rst_n),
+            outclk_0 => s_clk_27,
+            locked => s_rst_n
+        );
+
+    I2C_HDMI_Config0 : component I2C_HDMI_Config 
+        port map (
+            iCLK => i_clk_50,
+            iRST_N => i_rst_n,
+            I2C_SCLK => io_hdmi_i2c_scl,
+            I2C_SDAT => io_hdmi_i2c_sda,
+            HDMI_TX_INT => i_hdmi_tx_int
+        );
+    
+    hdmi_controler : entity work.hdmi_controler
+    generic map ( H_RES => 720, V_RES => 480 )
+    port map (
+        i_clk   => s_clk_27,
+        i_rst_n => s_rst_n,
+        o_x => s_scan_x,
+        o_y => s_scan_y,  
+        o_hdmi_tx_clk  => o_hdmi_tx_clk,
+        o_hdmi_tx_de   => s_de,
+        o_hdmi_tx_hs   => o_hdmi_tx_hs,
+        o_hdmi_tx_vs   => o_hdmi_tx_vs
+    );
+    o_hdmi_tx_de <= s_de;
+    
+    -- Encodeurs
+    inst_encoder_x : entity work.gestion_encodeur
+    generic map ( C_MAX_VAL => h_res, C_START_POS => h_res / 2 )
+    port map ( i_clk => i_clk_50, i_rst_n => s_rst_n, i_a => i_left_ch_a, i_b => i_left_ch_b, o_val => s_pos_x );
+
+    inst_encoder_y : entity work.gestion_encodeur
+    generic map ( C_MAX_VAL => v_res, C_START_POS => v_res / 2 )
+    port map ( i_clk => i_clk_50, i_rst_n => s_rst_n, i_a => i_right_ch_a, i_b => i_right_ch_b, o_val => s_pos_y );
+
+    -- ========================================================================
+    -- LOGIQUE DE GESTION MÉMOIRE (DESSIN + EFFACEMENT)
+    -- ========================================================================
+    
+    -- 1. Calcul des adresses de base
+    s_ram_addr_draw <= s_pos_y * h_res + s_pos_x;
+    s_ram_addr_read <= to_integer(s_scan_y) * h_res + to_integer(s_scan_x);
+
+    -- 2. Machine à états pour l'effacement
+    process(i_clk_50, s_rst_n)
+    begin
+        if s_rst_n = '0' then
+            s_state <= IDLE;
+            s_clear_cnt <= 0;
+        elsif rising_edge(i_clk_50) then
+            case s_state is
+                when IDLE =>
+                    -- Si bouton appuyé (actif bas '0'), on lance l'effacement
+                    if i_left_pb = '0' then
+                        s_state <= CLEAR;
+                        s_clear_cnt <= 0;
+                    end if;
+                    
+                when CLEAR =>
+                    -- On incrémente le compteur jusqu'à la fin de la mémoire
+                    if s_clear_cnt = C_MEM_SIZE - 1 then
+                        s_state <= IDLE; -- Fini !
+                        s_clear_cnt <= 0;
+                    else
+                        s_clear_cnt <= s_clear_cnt + 1;
+                    end if;
+            end case;
+        end if;
+    end process;
+
+    -- 3. Multiplexeur (Choix entre Dessin et Effacement)
+    -- Si on est en mode CLEAR, l'adresse vient du compteur et la donnée est 0
+    -- Sinon, l'adresse vient des encodeurs et la donnée est 1
+    s_final_addr_a <= s_clear_cnt when s_state = CLEAR else s_ram_addr_draw;
+    s_final_data_a <= "0"         when s_state = CLEAR else "1";
+
+    -- 4. Instanciation RAM
+    inst_PORT_AB : component dpram
+    generic map (
+        mem_size    => C_MEM_SIZE,
+        data_width  => C_RAM_DATA_WIDTH
+    )
+    port map (    
+        -- PORT A : Connecté à nos signaux multiplexés (s_final_...)
+        i_clk_a  => i_clk_50,
+        i_addr_a => s_final_addr_a,
+        i_data_a => s_final_data_a,
+        i_we_a   => '1', -- On écrit tout le temps (soit du blanc, soit du noir)
+
+        -- PORT B : Lecture HDMI (Inchangé)
+        i_clk_b  => s_clk_27,
+        i_addr_b => s_ram_addr_read,
+        i_data_b => (others => '0'),
+        i_we_b   => '0',
+        o_q_b    => s_ram_q_b
+    );
+
+    -- ========================================================================
+    -- AFFICHAGE FINAL
+    -- ========================================================================
+    process(s_scan_x, s_scan_y, s_pos_x, s_pos_y, s_de, s_ram_q_b)
+        variable v_scan_x_int : integer;
+        variable v_scan_y_int : integer;
+    begin
+        v_scan_x_int := to_integer(s_scan_x);
+        v_scan_y_int := to_integer(s_scan_y);
+
+        if s_de = '1' then
+            -- Curseur Rouge
+            if (v_scan_x_int >= s_pos_x and v_scan_x_int < s_pos_x + 16) and
+               (v_scan_y_int >= s_pos_y and v_scan_y_int < s_pos_y + 16) then
+                o_hdmi_tx_d <= x"FF0000"; 
+            
+            -- Trait Blanc (lu depuis la RAM)
+            elsif s_ram_q_b(0) = '1' then
+                o_hdmi_tx_d <= x"FFFFFF"; 
+                
+            -- Fond Bleu Foncé
+            else
+                o_hdmi_tx_d <= x"000050"; 
+            end if;
+        else
+            o_hdmi_tx_d <= (others => '0');
+        end if;
+    end process;
+end architecture rtl;
+
 ## 📂 Arborescence du projet
