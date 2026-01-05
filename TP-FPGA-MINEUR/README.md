@@ -398,7 +398,7 @@ Nous allons créer une petite "machine à états" :
 État CLEAR : Un compteur défile de 0 à la fin de la mémoire. À chaque cycle d'horloge, on écrit 0. Une fois fini, on retourne à IDLE.
 
 Il faut donc placer un Multiplexeur juste avant l'entrée de la RAM pour choisir qui (des encodeurs ou du compteur) a le droit de parler à la mémoire.
-```
+```VHDL
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -656,7 +656,3 @@ end architecture rtl;
 
 
 https://github.com/user-attachments/assets/89ed3202-be67-4f82-9b3b-c9bc2cdbbffb
-
-
-
-## 📂 Arborescence du projet
