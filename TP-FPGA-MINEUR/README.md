@@ -653,4 +653,10 @@ begin
     end process;
 end architecture rtl;
 
+
+
+https://github.com/user-attachments/assets/89ed3202-be67-4f82-9b3b-c9bc2cdbbffb
+
+
+
 ## 📂 Arborescence du projet
