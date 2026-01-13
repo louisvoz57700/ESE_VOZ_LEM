@@ -17,7 +17,7 @@ L’objectif principal est d’apprendre à concevoir un circuit numérique, le 
 
 ### 1. Premier Test
 On suit toute la démarche est on arrive bien éteindre la LED quand on appuie sur le bouton :
-<img width="480" height="848" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
+<img width="480" height="550°" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
 
 
 On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on appuie sur le bouton.
@@ -26,37 +26,85 @@ On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on
 
 
 ### 2. Faire clignoter une LED
+
+
+La clock FPGA_CLK1_50 est une clock de 50MHz, et elle est placé sur le pin V11.
+
+On peut alors tracer le schéma équivalent au code :
 ![WhatsApp Image 2025-12-12 à 10 37 48_b3b67c9f](https://github.com/user-attachments/assets/885d98dc-a522-4058-8c69-d7e5c6610f5b)
 
-La clock FPGA_CLK1_50 est une 50MHz, et elle est placé sur le pin V11.
 ![alt text](/TP-FPGA-MINEUR/IMG/image.png)
 
 ![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
+
+Cependant ici on ne voit pas le LED clignoté car nous sommes branché directement sur la clock de 50MHz (beaucoup trop rapide pour nous yeux)
+
+Dans la suite, nous allons crée un compteur qui va ramener le clignotement des LEDs à 100ms.
+On commence par faire un dessin de ce qu'il nous faut :
+
 ![WhatsApp Image 2025-12-12 à 10 37 48_571fd5b2](https://github.com/user-attachments/assets/ff54ca97-e1a9-49d1-bf60-13e0ae75aa39)
 
-
-6. On peut réaliser 
-
-7. On peut réaliser une première ébauche du compteur :
+Puis en modifiant le code, on obtient après synthesis :
 
 
-8. 
 ![alt text](image.png)
 
+On voit que ca ressemble bien à ce qu'on avait réalisé juste au dessus.
 
-11. Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
+Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
 
-**Chenillard**
+<video controls src="IMG_5914.MOV" title="Title"></video>
+
+### Chenillard
+Pour le Chenillard, on reprend ce qui a été fait avant et l'idée va être que tous les 5 000 000 de front montants on va allumer une led différente, et lorsque l'on atteint les 10 LEDs , on revient à la première.
 
 
-Gestion des encodeurs
+```VHDL
+begin
 
-### 3. Simulation
-Gestion des encodeurs
-- Création de testbenches.
-- ![WhatsApp Image 2025-12-12 à 11 29 12_fdd79241](https://github.com/user-attachments/assets/3e0310cd-c0f9-460c-9311-552607601bd9)
+    process(i_clk, i_rst_n)
+    begin
+        if (i_rst_n = '0') then
+            counter <= 0;
+            r_led   <= "0000000001"; 
+            
+        elsif (rising_edge(i_clk)) then
+            if (counter = 5000000) then
+                counter <= 0;
+                r_led <= r_led(8 downto 0) & r_led(9);          
+            else
+                counter <= counter + 1;
+            end if;
+        end if;
+    end process;
 
-- <img width="2212" height="864" alt="image" src="https://github.com/user-attachments/assets/03ddea3f-9e36-49ce-a7e2-ec6fecb05e71" />
+    o_led_vector <= r_led;
+
+end architecture rtl;
+```
+
+<video controls src="IMG_5916.mov" title="Title"></video>
+
+## Petit projet : Écran magique
+
+### GESTION DES ENCODEURS
+La première partie de ce projet consiste à prendre en main les encodeurs.
+
+Cette structure va nous servir à détecter les front montants / descendants de la clock.
+![alt text](image-1.png)
+
+
+Le composant manquant dans ce schéma est un XOR.
+
+En effet, si on passe d'un état bas à un état haut on aura un front montant. Le signal va d'abord être bas puis haut dans les bascule D donc nous allons avoir un XOR de 1 et 0 donc 1. Si on attend après , les 2 bascules D vont être en haut et donc la sortie redeviendra 0.
+
+Pour détecter seulement les front montants ( par exemple ) on pourra utiliser ce type de schéma :
+![alt text](image-2.png)
+
+
+
+On implémente cette solution en VHDL :
+
 ```VHDL
 library ieee;
 use ieee.std_logic_1164.all;
@@ -86,11 +134,23 @@ begin
 
 end architecture rtl;
 ```
-Sur Modelsim :
+<div style="display: flex; gap: 20px;">
+  <img src="https://github.com/user-attachments/assets/3e0310cd-c0f9-460c-9311-552607601bd9" width="48%">
+  <img src="https://github.com/user-attachments/assets/03ddea3f-9e36-49ce-a7e2-ec6fecb05e71" width="48%">
+</div>
+
+<br>
+
+
+Sur Modelsim, on simule notre composant pour voir si il fonctionne comme on veut : 
+
 <img width="2338" height="194" alt="image" src="https://github.com/user-attachments/assets/3843c69e-5392-47f0-a00e-400f1df53125" />
 
-- Vérification fonctionnelle.
-- Avec encodeur, il compte en binaire
+On voit bien la détection des fronts montants et descendant
+
+On peut tester notre encodeur, en faisant un code qui compte de 1 et l'affiche en binaire à travers les LEDs à chaque fois que l'on tourne le potentiomètre:
+
+<video controls src="IMG_5980.mov" title="Title"></video>
 
 ```VHDL
 library ieee;
@@ -185,33 +245,26 @@ begin
 end architecture rtl;
 ```
 
-https://github.com/user-attachments/assets/a947c91c-28af-4d59-b5d8-64f5598171c0
-
-
-
 **Contrôleur HDMI**
 
 On refait le fichier hdmi_controler , et on peut donc changer ce qui s'affiche à l'écran :
 
 <img width="1258" height="767" alt="image" src="https://github.com/user-attachments/assets/1c52c30a-5700-435d-8baa-ae291ab9909a" />
 
-Effet à l’écran :
+L'effet à l'écran vient car dans notre code on a :
 
+Rouge varie horizontalement (selon x)
 
-🔴 Rouge varie horizontalement (selon x)
+Vert varie verticalement (selon y)
 
-🟢 Vert varie verticalement (selon y)
+Bleu est constant à 0
 
-🔵 Bleu est constant à 0
-
-➡️ On obtient un dégradé rouge/vert, noir en bleu.
+Donc du bit 23 à 16  on aura le rouge , de 15 à 8 ça sera le vert puis de 7 à 0 le bleu. Grâce à la combinaison de ce vecteur, on va pouvoir créer n'importe quelle couleur.
 
 ## Déplacement d'un pixel
+On crée le code qui va pouvoir déplacer le pixel seul. Pour se faire, on va juste incrémenter 2 compteurs , un pour l'horizontal et un pour la vertical. Et donc à chaque front montant, on va garder en mémoire la valeur X et Y de notre pointeur , et les changer si on touche aux 2 encodeurs.
 
-
-
-https://github.com/user-attachments/assets/c5d05790-0866-4dea-bc2f-7f806b71dd6d
-
+<video controls src="528555457-c5d05790-0866-4dea-bc2f-7f806b71dd6d.mp4" title="Title"></video>
 ```VHDL
 library ieee;
 use ieee.std_logic_1164.all;
@@ -324,10 +377,13 @@ begin
 end architecture rtl;
 ```
 ## Mémoriser 
-- Expliquez ce qu'est une mémoire dual-port :
-  une mémoire qui possède deux entrées/sorties indépendantes.
-- Proposer un schéma pour mémoiriser les pixels.
-- <img width="2036" height="1496" alt="image" src="https://github.com/user-attachments/assets/222e6982-c690-4ee3-bb74-2d62ec075ce2" />
+La mémorisation des points est un peu plus complexe, car elle fait appel une mémoire RAM. Dans notre cas, nous allons utiliser une mémoire RAM dual-port. Le but de la mémoire RAM dual-port est d'avoir un accés en écriture et en lecture en même temps ce qui permet de gagner du temps !
+
+Chaque case du tableau est en fait une cellule de la mémoire dual-port (DPRAM), qui permet de lire et d’écrire les pixels simultanément sur deux ports différents : un port pour mémoriser les pixels allumés (écriture) et un port pour les afficher à l’écran (lecture). Cela permet de conserver l’état de chaque pixel et de reconstruire l’image à chaque balayage sans perdre les données déjà écrites
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/222e6982-c690-4ee3-bb74-2d62ec075ce2" />
+
+
 
 ```VHDL
 --mémoire
@@ -385,19 +441,18 @@ end architecture rtl;
             o_hdmi_tx_d <= (others => '0');
         end if;
     end process;
-	```
+```
 
-**Effacement**
-Ici on veut pouvoir effacer l'écran lors de l'appui sur un bouton (par exemple sur l'encodeur gauche). C'est plus compliqué qu'il n'y parait : Il faut parcourir toutes les adresses de la RAM pour y écrire un zéro. C'est le dernier exercice, ici vous ne serez plus guidés.
+## Effacement
 
-Expliquez comment résoudre le problème :
-Nous allons créer une petite "machine à états" :
+Pour l'effacement, nous allons une petite "machine à états" :
 
 État IDLE : On attend. Si on appuie sur le bouton, on passe à l'état CLEAR.
 
 État CLEAR : Un compteur défile de 0 à la fin de la mémoire. À chaque cycle d'horloge, on écrit 0. Une fois fini, on retourne à IDLE.
 
 Il faut donc placer un Multiplexeur juste avant l'entrée de la RAM pour choisir qui (des encodeurs ou du compteur) a le droit de parler à la mémoire.
+
 ```VHDL
 library ieee;
 use ieee.std_logic_1164.all;
@@ -653,6 +708,4 @@ begin
     end process;
 end architecture rtl;
 ```
-
-
-https://github.com/user-attachments/assets/89ed3202-be67-4f82-9b3b-c9bc2cdbbffb
+<video controls src="video_telecran.mp4" title="Title"></video>
