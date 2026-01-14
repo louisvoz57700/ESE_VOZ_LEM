@@ -20,7 +20,10 @@ L’objectif principal est de créer un télécran
 
 ### 1. Premier Test
 On suit toute la démarche est on arrive bien éteindre la LED quand on appuie sur le bouton :
+
 <img width="240" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
+
+
 Cependant, on remarque que la LED est allumé de base et lorsque l'on appuie sur le bouton elle s'éteint. Nous allons faire l'inverse.
 
 On change alors changer notre code en mettant not (pushl), la led s'allume lorsque l'on appuie sur le bouton.
@@ -28,20 +31,19 @@ On change alors changer notre code en mettant not (pushl), la led s'allume lorsq
 
 
 ### 2. Faire clignoter une LED
-
-
 La clock FPGA_CLK1_50 est une clock de 50MHz, et elle est placé sur le pin V11.
 
-On peut alors tracer le schéma équivalent au code :
-![WhatsApp Image 2025-12-12 à 10 37 48_b3b67c9f](https://github.com/user-attachments/assets/885d98dc-a522-4058-8c69-d7e5c6610f5b)
+On peut alors tracer le schéma équivalent au code pour avoir un compteur:
 
-![alt text](/TP-FPGA-MINEUR/IMG/image.png)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/885d98dc-a522-4058-8c69-d7e5c6610f5b" width="250" />
+  <img src="/TP-FPGA-MINEUR/IMG/image.png" width="250" />
+  <img src="/TP-FPGA-MINEUR/IMG/image-1.png" width="250" />
+</p>
 
-![alt text](/TP-FPGA-MINEUR/IMG/image-1.png)
+Cependant ici on ne voit pas le LED clignoté car nous sommes branché directement sur la clock de 50MHz (beaucoup trop rapide pour nos yeux)
 
-Cependant ici on ne voit pas le LED clignoté car nous sommes branché directement sur la clock de 50MHz (beaucoup trop rapide pour nous yeux)
-
-Dans la suite, nous allons crée un compteur qui va ramener le clignotement des LEDs à 100ms.
+Dans la suite, nous allons créer un compteur qui va ramener le clignotement des LEDs à 100ms.
 On commence par faire un dessin de ce qu'il nous faut :
 
 ![WhatsApp Image 2025-12-12 à 10 37 48_571fd5b2](https://github.com/user-attachments/assets/ff54ca97-e1a9-49d1-bf60-13e0ae75aa39)
@@ -51,7 +53,7 @@ Puis en modifiant le code, on obtient après synthesis :
 
 ![alt text](image.png)
 
-On voit que ca ressemble bien à ce qu'on avait réalisé juste au dessus.
+On voit que ca ressemble bien à ce qu'on avait réalisé juste au dessus et maintenant on peut voir la LED clignoter toutes les 100ms
 
 Le _n dans i_rst_n représente negated. Donc par défault il est inversé. Pour l'activer, il faut i_rst_n = 0.
 
