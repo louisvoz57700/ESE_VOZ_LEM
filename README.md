@@ -22,6 +22,6 @@ GitHub ne prend pas en charge l’affichage des fichiers vidéo intégrés (`.mp
 |----|--------|---------------------|
 | 🚗 TP | Création d'un auto-radio | [LIEN](./TP1) |
 |  TP | FPGA mineur | [LIEN](./TP-FPGA-MINEUR/README.md) |
-|  TP | FPGA majeur | [LIEN](./TP-FPGA-MAJEUR/README.md) |
+|  TP | FPGA majeur | [LIEN](./TP-FPGA-MAJEUR/readme.md) |
 |  TP | Traitement Numérique avancé | [LIEN](./TNA) |
 ---
