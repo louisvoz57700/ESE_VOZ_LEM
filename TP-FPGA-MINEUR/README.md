@@ -20,11 +20,10 @@ L’objectif principal est de créer un télécran
 
 ### 1. Premier Test
 On suit toute la démarche est on arrive bien éteindre la LED quand on appuie sur le bouton :
-<img width="480" height="550°" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
+<img width="240" alt="image" src="https://github.com/user-attachments/assets/f406379a-df81-4ad0-8d79-7b6d797983c3" />
+Cependant, on remarque que la LED est allumé de base et lorsque l'on appuie sur le bouton elle s'éteint. Nous allons faire l'inverse.
 
-
-On change alors notre en code en mettant not pushl, la led s'allume lorsque l'on appuie sur le bouton.
-
+On change alors changer notre code en mettant not (pushl), la led s'allume lorsque l'on appuie sur le bouton.
 
 
 
