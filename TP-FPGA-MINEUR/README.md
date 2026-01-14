@@ -5,11 +5,14 @@
 Ce TP a pour objectif de se familiariser avec le développement sur **FPGA**, depuis la description matérielle jusqu’à la synthèse et la mise en œuvre sur carte.
 
 **Matériel et outils utilisés :**
-- Carte FPGA : *(à compléter, ex : Basys 3 / Nexys A7 / DE10-Lite...)*
-- Langage HDL : *(VHDL / Verilog)*
-- Environnement : *(Vivado / Quartus)*
+- Carte FPGA : Cyclone V (Altera)
+- Langage HDL : VHDL
+- Environnement : Quartis / Riscfree
 
-L’objectif principal est d’apprendre à concevoir un circuit numérique, le simuler et le déployer sur FPGA.
+<img width="1500" height="753" alt="image" src="https://github.com/user-attachments/assets/a7badf13-0939-410c-b600-393ff47a0397" />
+
+
+L’objectif principal est de créer un télécran
 
 ---
 
